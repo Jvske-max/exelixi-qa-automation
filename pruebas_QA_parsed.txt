@@ -1,0 +1,541 @@
+Identificación
+Fecha
+Módulo
+Identificador del caso
+01/09/2026
+Pasarela
+R-055429
+Descripción corta
+Migración Pasarela / Sys2000
+Descripción completa
+Migración Pasarela / Sys2000 Mantenimiento de usuarios
+Ambiente de prueba
+QA
+Analista Programador
+Gabriel Estacio
+Analista de prueba
+Link: https://qasys2000.lamundialdeseguros.com/#/login
+Caso # 3: Usuario para Reportería
+Objetivo de la Prueba
+Verificar el funcionamiento de la creación y edición de usuarios que utilicen varios reportes. Debido a que existen reportes para usuarios que están “fijados” por código o por base de datos, cómo lo son el reporte de ordenes de pago y reporte de pólizas de usuarios. 
+Así mismo se comunica por la presente, que se desconoce el uso o la forma en que funcionan los reportes de RTON, superintendencia, técnicos, o reportes que dependan del “ODS”, ya que este proceso posiblemente no se ejecute en QA.
+Alcance - Elementos a Validar
+Creación de usuario con acceso a varios reportes.
+Prueba de selección y creación menús
+Validar funcionamiento de los reportes
+Datos iniciales de prueba:
+Ingresar como rmuñoz.
+A partir de ahí crear el primer usuario. 
+Usuario: rmuñoz
+Clave: rmuñoz
+Step 1 screenshot. 
+Previous Next 
+Step 2: (‎9/‎2/‎2026 3:21:29 PM) User keyboard input on "Mundial de Seguros - Avast Secure Browser (window)" in "Mundial de Seguros - Avast Secure Browser" [... CTRL-V TABULACION ... CTRL-V ENTRAR ENTRAR]
+Step 2 screenshot. 
+Previous Next 
+Step 3: (‎9/‎2/‎2026 3:21:33 PM) User left click on "Mantenimiento (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 3 screenshot. 
+Previous Next 
+Step 4: (‎9/‎2/‎2026 3:21:34 PM) User left click on "Seguridad (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 4 screenshot. 
+Previous Next 
+Step 5: (‎9/‎2/‎2026 3:21:35 PM) User left click on "No hay datos que coincidan con la búsqueda de filtros (item)" in "Mundial de Seguros - Avast Secure Browser"
+Step 5 screenshot. 
+Previous Next 
+Step 6: (‎9/‎2/‎2026 3:21:37 PM) User left click on "No hay datos que coincidan con la búsqueda de filtros (item)" in "Mundial de Seguros - Avast Secure Browser"
+Step 6 screenshot. 
+Previous Next 
+Step 7: (‎9/‎2/‎2026 3:21:38 PM) User left click on "Agregar Usuario (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 7 screenshot. 
+Previous Next 
+Step 8: (‎9/‎2/‎2026 3:21:39 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 8 screenshot. 
+Previous Next 
+Step 9: (‎9/‎2/‎2026 3:21:41 PM) User keyboard input on "Mundial de Seguros - Avast Secure Browser (window)" in "Mundial de Seguros - Avast Secure Browser" [... RETROCESO TABULACION ... TABULACION ...]
+Step 9 screenshot. 
+Previous Next 
+Step 10: (‎9/‎2/‎2026 3:21:49 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 10 screenshot. 
+Previous Next 
+Step 11: (‎9/‎2/‎2026 3:21:50 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 11 screenshot. 
+Previous Next 
+Step 12: (‎9/‎2/‎2026 3:21:50 PM) User left click on "Correo Electrónico * (edit)" in "Mundial de Seguros - Avast Secure Browser"
+Step 12 screenshot. 
+Previous Next 
+Step 13: (‎9/‎2/‎2026 3:21:51 PM) User keyboard input on "Mundial de Seguros - Avast Secure Browser (window)" in "Mundial de Seguros - Avast Secure Browser" [... CTRL-ALT-Q ...]
+Step 13 screenshot. 
+Previous Next 
+Step 14: (‎9/‎2/‎2026 3:21:53 PM) User mouse wheel up on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 14 screenshot. 
+Previous Next 
+Step 15: (‎9/‎2/‎2026 3:21:54 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 15 screenshot. 
+Previous Next 
+Step 16: (‎9/‎2/‎2026 3:21:55 PM) User mouse wheel down on "Confirmar Contraseña * (text)" in "Mundial de Seguros - Avast Secure Browser"
+Step 16 screenshot. 
+Previous Next 
+Step 17: (‎9/‎2/‎2026 3:21:55 PM) User mouse wheel up on "Confirmar Contraseña * (edit)" in "Mundial de Seguros - Avast Secure Browser"
+Step 17 screenshot. 
+Previous Next 
+Step 18: (‎9/‎2/‎2026 3:21:55 PM) User mouse wheel down on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 18 screenshot. 
+Previous Next 
+Step 19: (‎9/‎2/‎2026 3:22:00 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 19 screenshot. 
+Previous Next 
+Step 20: (‎9/‎2/‎2026 3:22:00 PM) User mouse wheel up on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 20 screenshot. 
+Previous Next 
+Step 21: (‎9/‎2/‎2026 3:22:14 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 21 screenshot. 
+Previous Next 
+Step 22: (‎9/‎2/‎2026 3:22:15 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 22 screenshot. 
+Previous Next 
+Step 23: (‎9/‎2/‎2026 3:22:45 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 23 screenshot. 
+Previous Next 
+Step 24: (‎9/‎2/‎2026 3:22:46 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 24 screenshot. 
+Previous Next 
+Step 25: (‎9/‎2/‎2026 3:22:49 PM) User mouse wheel down on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 25 screenshot. 
+Previous Next 
+Step 26: (‎9/‎2/‎2026 3:22:55 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 26 screenshot. 
+Previous Next 
+Step 27: (‎9/‎2/‎2026 3:23:04 PM) User left double click on "usuariocontrol@mail.com (item)" in "Mundial de Seguros - Avast Secure Browser"
+Step 27 screenshot. 
+Previous Next 
+Step 28: (‎9/‎2/‎2026 3:23:05 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 28 screenshot. 
+Previous Next 
+Step 29: (‎9/‎2/‎2026 3:23:06 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 29 screenshot. 
+Previous Next 
+Step 30: (‎9/‎2/‎2026 3:23:07 PM) User keyboard input on "Mundial de Seguros - Avast Secure Browser (window)" in "Mundial de Seguros - Avast Secure Browser" [... CTRL-V TABULACION ... ENTRAR ENTRAR]
+Step 30 screenshot. 
+Previous Next 
+Step 31: (‎9/‎2/‎2026 3:23:13 PM) User left click on "Generales (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 31 screenshot. 
+Previous Next 
+Step 32: (‎9/‎2/‎2026 3:23:14 PM) User left click on "Pólizas (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 32 screenshot. 
+Previous Next 
+Step 33: (‎9/‎2/‎2026 3:23:19 PM) User mouse wheel down on "V-10870482 (item)" in "Mundial de Seguros - Avast Secure Browser"
+Step 33 screenshot. 
+Previous Next 
+Step 34: (‎9/‎2/‎2026 3:23:20 PM) User left click on "Consultas (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 34 screenshot. 
+Previous Next 
+Step 35: (‎9/‎2/‎2026 3:23:22 PM) User left click on "Reporteria (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 35 screenshot. 
+Previous Next 
+Step 36: (‎9/‎2/‎2026 3:23:23 PM) User left click on "Recibos (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 36 screenshot. 
+Previous Next 
+Step 37: (‎9/‎2/‎2026 3:23:24 PM) User mouse wheel down on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 37 screenshot. 
+Previous Next 
+Step 38: (‎9/‎2/‎2026 3:24:07 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 38 screenshot. 
+Previous Next 
+Step 39: (‎9/‎2/‎2026 3:24:08 PM) User left click on "Open calendar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 39 screenshot. 
+Previous Next 
+Step 40: (‎9/‎2/‎2026 3:24:09 PM) User left click on "Previous month (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 40 screenshot. 
+Previous Next 
+Step 41: (‎9/‎2/‎2026 3:24:10 PM) User left click on "1/8/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 41 screenshot. 
+Previous Next 
+Step 42: (‎9/‎2/‎2026 3:24:10 PM) User left click on "Open calendar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 42 screenshot. 
+Previous Next 
+Step 43: (‎9/‎2/‎2026 3:24:11 PM) User left click on "Previous month (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 43 screenshot. 
+Previous Next 
+Step 44: (‎9/‎2/‎2026 3:24:12 PM) User left click on "31/8/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 44 screenshot. 
+Previous Next 
+Step 45: (‎9/‎2/‎2026 3:24:12 PM) User left click on "Generar excel (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 45 screenshot. 
+Previous Next 
+Step 46: (‎9/‎2/‎2026 3:24:17 PM) User left click on "OK (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 46 screenshot. 
+Previous Next 
+Step 47: (‎9/‎2/‎2026 3:24:20 PM) User left click on "Recent download history (dialog)" in "Mundial de Seguros - Avast Secure Browser"
+Step 47 screenshot. 
+Previous Next 
+Step 48: (‎9/‎2/‎2026 3:24:21 PM) User left double click on "reporte_RecibosCobrados_01-08-2026al31-08-2026v2.xlsx (text)" in "Recent download history"
+Step 48 screenshot. 
+Previous Next 
+Step 49: (‎9/‎2/‎2026 3:24:34 PM) User left click on "Close (Button)" in "Actividades diarias Gabriel Estacio.xlsx - Excel"
+Step 49 screenshot. 
+Previous Next 
+Step 50: (‎9/‎2/‎2026 3:24:35 PM) User left click on "Save (Button)" in "Microsoft Excel"
+Step 50 screenshot. 
+Previous Next 
+Step 51: (‎9/‎2/‎2026 3:24:46 PM) User left click on "Downloads (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 51 screenshot. 
+Previous Next 
+Step 52: (‎9/‎2/‎2026 3:24:47 PM) User left double click on "reporte_RecibosCobrados_01-08-2026al31-08-2026v2.xlsx (text)" in "Recent download history"
+Step 52 screenshot. 
+Previous Next 
+Step 53: (‎9/‎2/‎2026 3:24:52 PM) User left click on "Ribbon (pane)" in "reporte_RecibosCobrados_01-08-2026al31-08-2026v2.xlsx [Protected View] - Excel"
+Step 53 screenshot. 
+Previous Next 
+Step 54: (‎9/‎2/‎2026 3:24:55 PM) User mouse wheel down on "'E' 29 (item)" in "reporte_RecibosCobrados_01-08-2026al31-08-2026v2.xlsx [Protected View] - Excel"
+Step 54 screenshot. 
+Previous Next 
+Step 55: (‎9/‎2/‎2026 3:24:58 PM) User mouse drag start on "Page up (Button)" in "reporte_RecibosCobrados_01-08-2026al31-08-2026v2.xlsx [Protected View] - Excel"
+Step 55 screenshot. 
+Previous Next 
+Step 56: (‎9/‎2/‎2026 3:25:01 PM) User mouse drag end on "Position (Thumb)" in "reporte_RecibosCobrados_01-08-2026al31-08-2026v2.xlsx [Protected View] - Excel"
+Step 56 screenshot. 
+Previous Next 
+Step 57: (‎9/‎2/‎2026 3:25:03 PM) User left click in "reporte_RecibosCobrados_01-08-2026al31-08-2026v2.xlsx [Protected View] - Excel"
+Step 57 screenshot. 
+Previous Next 
+Step 58: (‎9/‎2/‎2026 3:25:05 PM) User left click on "Bonificaciones y Comisiones (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 58 screenshot. 
+Previous Next 
+Step 59: (‎9/‎2/‎2026 3:25:07 PM) User left click on "Seleccione (combo box)" in "Mundial de Seguros - Avast Secure Browser"
+Step 59 screenshot. 
+Previous Next 
+Step 60: (‎9/‎2/‎2026 3:25:08 PM) User keyboard input on "Mundial de Seguros - Avast Secure Browser (window)" in "Mundial de Seguros - Avast Secure Browser" [...]
+Step 60 screenshot. 
+Previous Next 
+Step 61: (‎9/‎2/‎2026 3:25:09 PM) User left click on "215 MANMAR SOCIEDAD DE CORRETAJE (option)" in "Mundial de Seguros - Avast Secure Browser"
+Step 61 screenshot. 
+Previous Next 
+Step 62: (‎9/‎2/‎2026 3:25:10 PM) User left click on "Moneda Pago Comisión * (combo box)" in "Mundial de Seguros - Avast Secure Browser"
+Step 62 screenshot. 
+Previous Next 
+Step 63: (‎9/‎2/‎2026 3:25:11 PM) User left click on "DOLARES (option)" in "Mundial de Seguros - Avast Secure Browser"
+Step 63 screenshot. 
+Previous Next 
+Step 64: (‎9/‎2/‎2026 3:25:11 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 64 screenshot. 
+Previous Next 
+Step 65: (‎9/‎2/‎2026 3:25:12 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 65 screenshot. 
+Previous Next 
+Step 66: (‎9/‎2/‎2026 3:25:13 PM) User left click on "Open calendar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 66 screenshot. 
+Previous Next 
+Step 67: (‎9/‎2/‎2026 3:25:14 PM) User left click on "Previous month (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 67 screenshot. 
+Previous Next 
+Step 68: (‎9/‎2/‎2026 3:25:14 PM) User left click on "1/8/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 68 screenshot. 
+Previous Next 
+Step 69: (‎9/‎2/‎2026 3:25:15 PM) User left click on "Open calendar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 69 screenshot. 
+Previous Next 
+Step 70: (‎9/‎2/‎2026 3:25:16 PM) User left click on "Previous month (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 70 screenshot. 
+Previous Next 
+Step 71: (‎9/‎2/‎2026 3:25:17 PM) User left click on "31/8/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 71 screenshot. 
+Previous Next 
+Step 72: (‎9/‎2/‎2026 3:25:18 PM) User left click on "Buscar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 72 screenshot. 
+Previous Next 
+Step 73: (‎9/‎2/‎2026 3:25:18 PM) User mouse wheel down on "COMISIONES COBRADAS (tab panel)" in "Mundial de Seguros - Avast Secure Browser"
+Step 73 screenshot. 
+Previous Next 
+Step 74: (‎9/‎2/‎2026 3:25:20 PM) User mouse wheel up on "COMISIONES COBRADAS (tab panel)" in "Mundial de Seguros - Avast Secure Browser"
+Step 74 screenshot. 
+Previous Next 
+Step 75: (‎9/‎2/‎2026 3:26:22 PM) User left click on "Seleccione (combo box)" in "Mundial de Seguros - Avast Secure Browser"
+Step 75 screenshot. 
+Previous Next 
+Step 76: (‎9/‎2/‎2026 3:26:24 PM) User keyboard input on "Mundial de Seguros - Avast Secure Browser (window)" in "Mundial de Seguros - Avast Secure Browser" [... RETROCESO ...]
+Step 76 screenshot. 
+Previous Next 
+Step 77: (‎9/‎2/‎2026 3:26:28 PM) User left click on "Corredores * (list)" in "Mundial de Seguros - Avast Secure Browser"
+Step 77 screenshot. 
+Previous Next 
+Step 78: (‎9/‎2/‎2026 3:26:28 PM) User left click on "Corredores * (list)" in "Mundial de Seguros - Avast Secure Browser"
+Step 78 screenshot. 
+Previous Next 
+Step 79: (‎9/‎2/‎2026 3:26:29 PM) User left click on "Moneda Pago Comisión * (combo box)" in "Mundial de Seguros - Avast Secure Browser"
+Step 79 screenshot. 
+Previous Next 
+Step 80: (‎9/‎2/‎2026 3:26:30 PM) User left click on "DOLARES (option)" in "Mundial de Seguros - Avast Secure Browser"
+Step 80 screenshot. 
+Previous Next 
+Step 81: (‎9/‎2/‎2026 3:26:30 PM) User left click on "COMISIONES COBRADAS (tab panel)" in "Mundial de Seguros - Avast Secure Browser"
+Step 81 screenshot. 
+Previous Next 
+Step 82: (‎9/‎2/‎2026 3:26:31 PM) User left click on "Filtrar por fecha de prima cobrada (option)" in "Mundial de Seguros - Avast Secure Browser"
+Step 82 screenshot. 
+Previous Next 
+Step 83: (‎9/‎2/‎2026 3:26:32 PM) User left click on "Open calendar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 83 screenshot. 
+Previous Next 
+Step 84: (‎9/‎2/‎2026 3:26:33 PM) User left click on "Choose month and year (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 84 screenshot. 
+Previous Next 
+Step 85: (‎9/‎2/‎2026 3:26:33 PM) User left click on "2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 85 screenshot. 
+Previous Next 
+Step 86: (‎9/‎2/‎2026 3:26:35 PM) User left click on "1/5/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 86 screenshot. 
+Previous Next 
+Step 87: (‎9/‎2/‎2026 3:26:36 PM) User left click on "1/5/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 87 screenshot. 
+Previous Next 
+Step 88: (‎9/‎2/‎2026 3:26:37 PM) User left click on "Open calendar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 88 screenshot. 
+Previous Next 
+Step 89: (‎9/‎2/‎2026 3:26:38 PM) User left click on "Choose month and year (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 89 screenshot. 
+Previous Next 
+Step 90: (‎9/‎2/‎2026 3:26:39 PM) User left click on "2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 90 screenshot. 
+Previous Next 
+Step 91: (‎9/‎2/‎2026 3:26:40 PM) User left click on "1/5/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 91 screenshot. 
+Previous Next 
+Step 92: (‎9/‎2/‎2026 3:26:41 PM) User left click on "31/5/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 92 screenshot. 
+Previous Next 
+Step 93: (‎9/‎2/‎2026 3:26:42 PM) User left click on "Buscar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 93 screenshot. 
+Previous Next 
+Step 94: (‎9/‎2/‎2026 3:26:42 PM) User mouse wheel down on "COMISIONES COBRADAS (tab panel)" in "Mundial de Seguros - Avast Secure Browser"
+Step 94 screenshot. 
+Previous Next 
+Step 95: (‎9/‎2/‎2026 3:26:44 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 95 screenshot. 
+Previous Next 
+Step 96: (‎9/‎2/‎2026 3:26:45 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 96 screenshot. 
+Previous Next 
+Step 97: (‎9/‎2/‎2026 3:26:46 PM) User left click on "Downloads (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 97 screenshot. 
+Previous Next 
+Step 98: (‎9/‎2/‎2026 3:26:47 PM) User left double click on "Reporte de Primas Cobradas desde 2026-05-01 hasta 2026-05-31 (1).xlsx (text)" in "Recent download history"
+Step 98 screenshot. 
+Previous Next 
+Step 99: (‎9/‎2/‎2026 3:26:53 PM) User left click in "Reporte de Primas Cobradas desde 2026-05-01 hasta 2026-05-31 (1).xlsx [Protected View] - Excel"
+Step 99 screenshot. 
+Previous Next 
+Step 100: (‎9/‎2/‎2026 3:26:54 PM) User left click on "Siniestros (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 100 screenshot. 
+Previous Next 
+Step 101: (‎9/‎2/‎2026 3:26:56 PM) User left click on "Open calendar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 101 screenshot. 
+Previous Next 
+Step 102: (‎9/‎2/‎2026 3:26:57 PM) User left click on "Previous month (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 102 screenshot. 
+Previous Next 
+Step 103: (‎9/‎2/‎2026 3:26:58 PM) User left click on "1/8/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 103 screenshot. 
+Previous Next 
+Step 104: (‎9/‎2/‎2026 3:26:59 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 104 screenshot. 
+Previous Next 
+Step 105: (‎9/‎2/‎2026 3:26:59 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 105 screenshot. 
+Previous Next 
+Step 106: (‎9/‎2/‎2026 3:27:00 PM) User left click on "Previous month (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 106 screenshot. 
+Previous Next 
+Step 107: (‎9/‎2/‎2026 3:27:01 PM) User left click on "31/8/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 107 screenshot. 
+Previous Next 
+Step 108: (‎9/‎2/‎2026 3:27:02 PM) User left click on "Generar excel (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 108 screenshot. 
+Previous Next 
+Step 109: (‎9/‎2/‎2026 3:27:04 PM) User left click on "OK (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 109 screenshot. 
+Previous Next 
+Step 110: (‎9/‎2/‎2026 3:27:05 PM) User left click on "New download available (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 110 screenshot. 
+Previous Next 
+Step 111: (‎9/‎2/‎2026 3:27:05 PM) User left double click on "reporte_Siniestros (4).xlsx (text)" in "Recent download history"
+Step 111 screenshot. 
+Previous Next 
+Step 112: (‎9/‎2/‎2026 3:27:10 PM) User left click on "'J' 11 (item)" in "reporte_Siniestros (4).xlsx [Protected View] - Excel"
+Step 112 screenshot. 
+Previous Next 
+Step 113: (‎9/‎2/‎2026 3:27:11 PM) User left click on "'J' 25 (item)" in "reporte_Siniestros (4).xlsx [Protected View] - Excel"
+Step 113 screenshot. 
+Previous Next 
+Step 114: (‎9/‎2/‎2026 3:27:12 PM) User left click in "reporte_Siniestros (4).xlsx [Protected View] - Excel"
+Step 114 screenshot. 
+Previous Next 
+Step 115: (‎9/‎2/‎2026 3:27:13 PM) User left click in "Mundial de Seguros - Avast Secure Browser"
+Step 115 screenshot. 
+Previous Next 
+Step 116: (‎9/‎2/‎2026 3:27:19 PM) User left click on "Nro. Orden Desde (text)" in "Mundial de Seguros - Avast Secure Browser"
+Step 116 screenshot. 
+Previous Next 
+Step 117: (‎9/‎2/‎2026 3:27:24 PM) User mouse drag start on "Seleccionar página (group)" in "Mundial de Seguros - Avast Secure Browser"
+Step 117 screenshot. 
+Previous Next 
+Step 118: (‎9/‎2/‎2026 3:27:24 PM) User mouse drag end on "Seleccionar página (group)" in "Mundial de Seguros - Avast Secure Browser"
+Step 118 screenshot. 
+Previous Next 
+Step 119: (‎9/‎2/‎2026 3:27:26 PM) User left click on "Nro. Orden Desde (text)" in "Mundial de Seguros - Avast Secure Browser"
+Step 119 screenshot. 
+Previous Next 
+Step 120: (‎9/‎2/‎2026 3:27:28 PM) User left click on "Open calendar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 120 screenshot. 
+Previous Next 
+Step 121: (‎9/‎2/‎2026 3:27:30 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 121 screenshot. 
+Previous Next 
+Step 122: (‎9/‎2/‎2026 3:27:30 PM) User left click on "1/8/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 122 screenshot. 
+Previous Next 
+Step 123: (‎9/‎2/‎2026 3:27:32 PM) User left click on "Open calendar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 123 screenshot. 
+Previous Next 
+Step 124: (‎9/‎2/‎2026 3:27:32 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 124 screenshot. 
+Previous Next 
+Step 125: (‎9/‎2/‎2026 3:27:33 PM) User left double click on "Previous month (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 125 screenshot. 
+Previous Next 
+Step 126: (‎9/‎2/‎2026 3:27:35 PM) User left click on "31/8/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 126 screenshot. 
+Previous Next 
+Step 127: (‎9/‎2/‎2026 3:27:36 PM) User left click on "EXPORTAR PDF (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 127 screenshot. 
+Previous Next 
+Step 128: (‎9/‎2/‎2026 3:27:39 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 128 screenshot. 
+Previous Next 
+Step 129: (‎9/‎2/‎2026 3:27:56 PM) User left click on "Buscar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 129 screenshot. 
+Previous Next 
+Step 130: (‎9/‎2/‎2026 3:27:57 PM) User left click on "EXPORTAR PDF (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 130 screenshot. 
+Previous Next 
+Step 131: (‎9/‎2/‎2026 3:28:49 PM) User left click on "Page 1 (region)" in "Impresión de Órdenes de Pago - Avast Secure Browser"
+Step 131 screenshot. 
+Previous Next 
+Step 132: (‎9/‎2/‎2026 3:28:50 PM) User left click on "Mundial de Seguros (tab item)" in "Mundial de Seguros - Avast Secure Browser"
+Step 132 screenshot. 
+Previous Next 
+Step 133: (‎9/‎2/‎2026 3:28:55 PM) User left click on "Módulo Administrativo (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 133 screenshot. 
+Previous Next 
+Step 134: (‎9/‎2/‎2026 3:28:55 PM) User left click on "Consulta de Cobranza (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 134 screenshot. 
+Previous Next 
+Step 135: (‎9/‎2/‎2026 3:29:01 PM) User left click on "Visualizar detalle de la transacción (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 135 screenshot. 
+Previous Next 
+Step 136: (‎9/‎2/‎2026 3:29:01 PM) User mouse wheel down on "Tomador V-15700584 GRAU LOPEZ, YENNIFER DE LOS ANGELES Fecha de notificacion de pago 21-08-2026 Tasa BCV de cobro Notificación Nº 183787 Pago Bs 38997.61 Pago $ 50 Visualizar detalle de la transacción (tab panel)" in "Mundial de Seguros - Avast Secure Browser"
+Step 136 screenshot. 
+Previous Next 
+Step 137: (‎9/‎2/‎2026 3:29:01 PM) User mouse wheel up on "Tomador V-15700584 GRAU LOPEZ, YENNIFER DE LOS ANGELES Fecha de notificacion de pago 21-08-2026 Tasa BCV de cobro Notificación Nº 183787 Pago Bs 38997.61 Pago $ 50 Visualizar detalle de la transacción (tab panel)" in "Mundial de Seguros - Avast Secure Browser"
+Step 137 screenshot. 
+Previous Next 
+Step 138: (‎9/‎2/‎2026 3:29:03 PM) User left click on "Recibos cobrados (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 138 screenshot. 
+Previous Next 
+Step 139: (‎9/‎2/‎2026 3:29:09 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 139 screenshot. 
+Previous Next 
+Step 140: (‎9/‎2/‎2026 3:29:43 PM) User left click on "V-3 (item)" in "Mundial de Seguros - Avast Secure Browser"
+Step 140 screenshot. 
+Previous Next 
+Step 141: (‎9/‎2/‎2026 3:29:45 PM) User left click on "Close (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 141 screenshot. 
+Previous Next 
+Step 142: (‎9/‎2/‎2026 3:29:46 PM) User left click on "Generales (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 142 screenshot. 
+Previous Next 
+Step 143: (‎9/‎2/‎2026 3:29:47 PM) User left click on "Pólizas (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 143 screenshot. 
+Previous Next 
+Step 144: (‎9/‎2/‎2026 3:29:52 PM) User left click on "AUTOMOVIL (item)" in "Mundial de Seguros - Avast Secure Browser"
+Step 144 screenshot. 
+Previous Next 
+Step 145: (‎9/‎2/‎2026 3:29:52 PM) User mouse wheel down on "IDLER MEDINA, GRACIELA E EDELVAIS (item)" in "Mundial de Seguros - Avast Secure Browser"
+Step 145 screenshot. 
+Previous Next 
+Step 146: (‎9/‎2/‎2026 3:29:54 PM) User left click on "Consultas (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 146 screenshot. 
+Previous Next 
+Step 147: (‎9/‎2/‎2026 3:29:55 PM) User left click on "Corredores (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 147 screenshot. 
+Previous Next 
+Step 148: (‎9/‎2/‎2026 3:29:59 PM) User left click on "Open calendar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 148 screenshot. 
+Previous Next 
+Step 149: (‎9/‎2/‎2026 3:30:04 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 149 screenshot. 
+Previous Next 
+Step 150: (‎9/‎2/‎2026 3:30:05 PM) User left click on "1/8/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 150 screenshot. 
+Previous Next 
+Step 151: (‎9/‎2/‎2026 3:30:08 PM) User left click on "Open calendar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 151 screenshot. 
+Previous Next 
+Step 152: (‎9/‎2/‎2026 3:30:08 PM) User left click on "Previous month (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 152 screenshot. 
+Previous Next 
+Step 153: (‎9/‎2/‎2026 3:30:10 PM) User left click on "31/8/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 153 screenshot. 
+Previous Next 
+Step 154: (‎9/‎2/‎2026 3:30:11 PM) User left click on "Open calendar (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 154 screenshot. 
+Previous Next 
+Step 155: (‎9/‎2/‎2026 3:30:12 PM) User left click on "Previous month (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 155 screenshot. 
+Previous Next 
+Step 156: (‎9/‎2/‎2026 3:30:12 PM) User left double click on "Previous month (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 156 screenshot. 
+Previous Next 
+Step 157: (‎9/‎2/‎2026 3:30:13 PM) User left double click on "Previous month (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 157 screenshot. 
+Previous Next 
+Step 158: (‎9/‎2/‎2026 3:30:13 PM) User left double click on "Previous month (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 158 screenshot. 
+Previous Next 
+Step 159: (‎9/‎2/‎2026 3:30:14 PM) User left click on "1/1/2026 (toggle button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 159 screenshot. 
+Previous Next 
+Step 160: (‎9/‎2/‎2026 3:30:15 PM) User mouse wheel down on "Vigente (item)" in "Mundial de Seguros - Avast Secure Browser"
+Step 160 screenshot. 
+Previous Next 
+Step 161: (‎9/‎2/‎2026 3:30:16 PM) User left click on "Bonos (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 161 screenshot. 
+Previous Next 
+Step 162: (‎9/‎2/‎2026 3:30:20 PM) User left click on "EXPORTAR EN EXCEL (button)" in "Mundial de Seguros - Avast Secure Browser"
+Step 162 screenshot. 
+Previous Next 
+Step 163: (‎9/‎2/‎2026 3:30:22 PM) User left double click on "Reporte de Corredores Desconocido (02_09_2026).xlsx (text)" in "Recent download history"
+Step 163 screenshot. 
+Previous Next 
+Step 164: (‎9/‎2/‎2026 3:30:27 PM) User left click in "Reporte de Corredores Desconocido (02_09_2026).xlsx [Protected View] - Excel"
+Step 164 screenshot. 
+Previous Next 
+Step 165: (‎9/‎2/‎2026 3:30:29 PM) User left click on "Consultas (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 165 screenshot. 
+Previous Next 
+Step 166: (‎9/‎2/‎2026 3:30:30 PM) User left click on "Comisiones (link)" in "Mundial de Seguros - Avast Secure Browser"
+Step 166 screenshot. 
+Previous Next 
+Step 167: (‎9/‎2/‎2026 3:30:31 PM) User mouse wheel down on "0 - (item)" in "Mundial de Seguros - Avast Secure Browser"
+Step 167 screenshot. 
+Previous Next 
+Step 168: (‎9/‎2/‎2026 3:30:32 PM) User mouse wheel up on "0 - (item)" in "Mundial de Seguros - Avast Secure Browser"
+Step 168 screenshot. 
+Previous Next 
+Step 169: (‎9/‎2/‎2026 3:30:32 PM) User mouse wheel down on "0 - (item)" in "Mundial de Seguros - Avast Secure Browser"
+Step 169 screenshot. 
+Previous Next 
+Step 170: (‎9/‎2/‎2026 3:30:36 PM) User left click on "Mundial de Seguros (document)" in "Mundial de Seguros - Avast Secure Browser"
+Step 170 screenshot. 
+Previous Next 
+Step 171: (‎9/‎2/‎2026 3:30:38 PM) User left click on "38.6 KB • Done (text)" in "Recent download history"
+Step 171 screenshot. 
