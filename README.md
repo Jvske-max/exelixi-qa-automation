@@ -39,86 +39,122 @@ QA_AUTOMATIZACIÓN/
 
 ---
 
-## 🚀 Getting Started (for Exelixi.Tech Team)
+## 📖 Beginner's Guide (How to Install & Use)
 
-### 1. Prerequisites
-- **Python 3.13+** installed.
-- **Git** installed and configured.
+Welcome! If you are a QA tester, analyst, or team member at **Exelixi.Tech** without a software engineering background, this guide is designed for you.
 
-### 2. Environment Setup
-
-Clone the repository and set up a Python virtual environment:
-
-```bash
-git clone https://github.com/Jvske-max/exelixi-qa-automation.git
-cd exelixi-qa-automation
-
-# Create virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Install Playwright browser binaries
-playwright install chromium
-```
-
-### 3. Environment Variables
-
-Create or export the credentials required for the QA environment (Sys2000):
-
-```bash
-export QA_BASE_URL="https://qasys2000.lamundialdeseguros.com/#/login"
-export QA_USERNAME="your_qa_username"
-export QA_PASSWORD="your_qa_password"
-```
-
-*(If omitted, tests fall back to local test defaults configured in `tests/conftest.py`)*.
+### 🤔 What does this tool do?
+Think of this tool as an **automated virtual assistant**:
+1. You receive a **Word (`.docx`) or PDF document** from developers describing manual test steps.
+2. You pass that file to this tool.
+3. The tool **reads the document, opens Google Chrome, performs the clicks and text inputs step-by-step, and takes screenshot evidence of every action**.
+4. When finished, it delivers an **Executive PDF Report** showing what passed, what failed, and the full screenshot log.
 
 ---
 
-## 🧪 Running Tests
+### 💻 Step-by-Step Setup (One-Time Setup)
 
-The test suite uses `pytest` markers (`smoke`, `api`, `e2e`):
+You only need to complete this setup once on your computer.
 
-### ⚡ Fast Smoke & API Tests (Sub-second execution)
-Ideal for pre-commit verification and continuous feedback:
+#### Step 1: Open your Terminal
+- **Windows**: Press `Win + R`, type `powershell`, and press Enter.
+- **Mac / Linux**: Open the **Terminal** app.
+
+#### Step 2: Download the Project
+Copy and paste this command into your terminal:
 ```bash
-pytest -m "smoke or api" -v
+git clone https://github.com/Jvske-max/exelixi-qa-automation.git
+cd exelixi-qa-automation
 ```
 
-### 🌐 End-to-End Browser Tests (Playwright)
-Executes browser flows against the QA environment:
-```bash
-# Headless mode
-pytest -m e2e -v
+#### Step 3: Create Your Private Work Environment
+Python uses a "virtual environment" (a private sandbox so it doesn't conflict with other programs):
 
-# Headed mode (watch the browser actions live)
-pytest -m e2e --headed -v
+- **On Mac / Linux**:
+  ```bash
+  python3 -m venv .venv
+  source .venv/bin/activate
+  ```
+- **On Windows (PowerShell)**:
+  ```powershell
+  python -m venv .venv
+  .venv\Scripts\Activate.ps1
+  ```
+*(You will see `(.venv)` appear at the start of your command prompt. That means your environment is active!)*
+
+#### Step 4: Install Dependencies
+Run this command to install all required libraries:
+```bash
+pip install -r requirements.txt
 ```
 
-### 📊 Code Coverage
-Generate coverage reports for clients and internal services:
+#### Step 5: Install the Automated Browser
+Download the automated Chrome browser:
 ```bash
-pytest --cov=apiclients --cov=mocks -m "smoke or api"
+playwright install chromium
 ```
+🎉 **Setup is complete! You are ready to run tests.**
 
-### 📄 Document-Driven Runner & PDF Evidence Reporter
-Automatically parses `.docx` or `.pdf` test specification documents provided by developers, executes the actions via Playwright, and compiles an executive PDF evidence report with step timestamps and screenshots:
+---
+
+### 🚀 How to Run a Test from a Word (`.docx`) or PDF Document
+
+Whenever developers deliver a test specification document (such as `pruebas QA # 1 R-055429...docx`):
+
+#### 1. Place the document in the project folder
+Copy your `.docx` or `.pdf` file into the `exelixi-qa-automation` folder.
+
+#### 2. Run the Automation
+Run this command in your terminal:
 
 ```bash
 python -m runners.doc_runner \
   --doc "pruebas QA # 1 R-055429_mantenimiento_usuarios_usuario_para_reporteria fecha 24092026.docx" \
   --output-report "artifacts/execution_report.pdf" \
-  --headless
+  --headed
 ```
 
-### 🔍 Code Quality & Linting
-Run Ruff to check formatting and code standards:
-```bash
-ruff check .
-```
+**Command options explained:**
+- `--doc`: The filename of the Word or PDF document you want to execute.
+- `--output-report`: Where to save the final PDF report (e.g. `artifacts/execution_report.pdf`).
+- `--headed`: *(Recommended for visual observation)* Opens the browser on your screen so you can watch the robot click and fill fields in real time. Remove `--headed` if you want it to run silently in the background.
+
+#### 3. View Your Results!
+- Open the `artifacts/` folder on your computer.
+- Double-click **`execution_report.pdf`** to view your executive report with all test steps, timestamps, and embedded screenshots.
+- Individual full-size screenshots are also saved in `test-evidence/screenshots/`.
+
+---
+
+### ⚡ Running Pre-Configured Test Suites
+
+If you want to run the automated framework checks:
+
+- **⚡ Fast Smoke & API Tests** (runs in under 1 second without network dependencies):
+  ```bash
+  pytest -m "smoke or api" -v
+  ```
+- **🌐 End-to-End Browser Tests Live** (runs against the QA environment with browser visible):
+  ```bash
+  pytest -m e2e --headed -v
+  ```
+- **📊 Code Coverage Report**:
+  ```bash
+  pytest --cov=parsers --cov=reporting --cov=runners tests/unit/ tests/integration/
+  ```
+
+---
+
+### ❓ Frequently Asked Questions & Troubleshooting
+
+- **Q: It says `python3: command not found` or `python is not recognized`.**  
+  👉 You need to install Python 3.13 from [python.org](https://www.python.org/downloads/). On Windows, ensure you check the box *"Add Python to PATH"* during installation.
+- **Q: It says `playwright: command not found` or the browser doesn't open.**  
+  👉 Ensure your virtual environment is active (you see `(.venv)` in your terminal prompt) and run `playwright install chromium`.
+- **Q: How do I customize Sys2000 test credentials?**  
+  👉 Tests default to QA test user `rmuñoz`. If you have a custom test user, set them before running:
+  - Mac/Linux: `export QA_USERNAME="your_user"` and `export QA_PASSWORD="your_password"`
+  - Windows: `$env:QA_USERNAME="your_user"` and `$env:QA_PASSWORD="your_password"`
 
 ---
 
