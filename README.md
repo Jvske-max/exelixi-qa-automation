@@ -104,6 +104,16 @@ Generate coverage reports for clients and internal services:
 pytest --cov=apiclients --cov=mocks -m "smoke or api"
 ```
 
+### 📄 Document-Driven Runner & PDF Evidence Reporter
+Automatically parses `.docx` or `.pdf` test specification documents provided by developers, executes the actions via Playwright, and compiles an executive PDF evidence report with step timestamps and screenshots:
+
+```bash
+python -m runners.doc_runner \
+  --doc "pruebas QA # 1 R-055429_mantenimiento_usuarios_usuario_para_reporteria fecha 24092026.docx" \
+  --output-report "artifacts/execution_report.pdf" \
+  --headless
+```
+
 ### 🔍 Code Quality & Linting
 Run Ruff to check formatting and code standards:
 ```bash
