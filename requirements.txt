@@ -1,0 +1,10 @@
+pytest
+pytest-playwright
+playwright
+requests
+allure-pytest
+fastapi
+uvicorn
+httpx>=0.28.1
+pytest-cov>=6.0.0
+ruff>=0.9.0

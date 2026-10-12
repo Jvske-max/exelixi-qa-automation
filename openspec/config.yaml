@@ -1,0 +1,63 @@
+schema: spec-driven
+
+context: |
+  Tech stack: Python 3.13, pytest, pytest-playwright, Playwright, FastAPI, Requests, Allure
+  Architecture: Page Object Model (POM), layered test automation, FastAPI mocks
+  Testing: pytest (.venv/bin/pytest) with smoke, api, e2e markers
+  Project: QA Automation Framework for Exelixi insurance platform
+
+strict_tdd: true
+
+testing:
+  runner:
+    command: ".venv/bin/pytest"
+    framework: "pytest"
+  layers:
+    unit:
+      available: false
+      tool: null
+    integration:
+      available: true
+      tool: "requests / fastapi testclient"
+    e2e:
+      available: true
+      tool: "pytest-playwright"
+  coverage:
+    available: true
+    command: ".venv/bin/pytest --cov"
+  quality:
+    linter:
+      available: true
+      command: ".venv/bin/ruff check"
+    type_checker:
+      available: false
+      command: null
+    formatter:
+      available: false
+      command: null
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    guidelines:
+      - Follow Page Object Model (POM) conventions in pageobjects/
+      - Keep selectors private to Page Object classes
+      - Never hardcode credentials or production URLs
+    tdd: true
+    test_command: ".venv/bin/pytest -m smoke -q"
+  verify:
+    test_command: ".venv/bin/pytest"
+    build_command: ""
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas

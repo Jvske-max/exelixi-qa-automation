@@ -1,0 +1,15 @@
+{
+  "auto-smoke-test": {
+    "PostToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content",
+        "hooks": [
+          {
+            "command": "sh -c \"cd \\\"/home/fernandojosesilvatrejo/Documents/9no Semestre/QA_AUTOMATIZACI\u00d3N\\\" && .venv/bin/pytest -m smoke -q > /dev/null 2>&1 || true\"",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}
