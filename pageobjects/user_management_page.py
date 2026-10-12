@@ -19,16 +19,21 @@ class UserManagementPage:
         self._validation_error = ".invalid-feedback, .error-message, .text-danger, [role='alert'], span.error, :invalid"
         self._users_table = "table, .table, .mat-table, .user-grid, div[role='grid'], button:has-text('Agregar Usuario')"
 
-    def navigate_to_user_management(self):
+    def click_mantenimiento(self, timeout: int = 10000) -> None:
         mantenimiento = self.page.locator(self._mantenimiento_link).first
-        expect(mantenimiento).to_be_visible(timeout=10000)
+        expect(mantenimiento).to_be_visible(timeout=timeout)
         mantenimiento.click()
-
-        seguridad = self.page.locator(self._seguridad_link).first
-        expect(seguridad).to_be_visible(timeout=10000)
-        seguridad.click()
-
         self.page.wait_for_load_state("domcontentloaded")
+
+    def click_seguridad(self, timeout: int = 10000) -> None:
+        seguridad = self.page.locator(self._seguridad_link).first
+        expect(seguridad).to_be_visible(timeout=timeout)
+        seguridad.click()
+        self.page.wait_for_load_state("domcontentloaded")
+
+    def navigate_to_user_management(self):
+        self.click_mantenimiento()
+        self.click_seguridad()
 
     def open_add_user_form(self):
         add_btn = self.page.locator(self._add_user_button).first
