@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import contextlib
 import os
 import re
+import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 
@@ -17,6 +20,70 @@ from pageobjects.user_management_page import UserManagementPage
 from parsers.doc_parser import DocParser
 from parsers.models import ExecutionReport, StepDefinition, StepResult, TestCase
 from reporting.pdf_reporter import PDFReporter
+
+
+def _expand_env_vars(text: str) -> str:
+    """Expand ${VAR} references using os.environ.
+
+    Raises:
+        ValueError: If a referenced environment variable is not defined, naming the variable.
+    """
+    pattern = re.compile(r"\$\{([A-Z0-9_]+)\}")
+    matches = pattern.findall(text)
+    for var_name in matches:
+        if var_name not in os.environ:
+            raise ValueError(f"Missing required environment variable: ${{{var_name}}}")
+
+    return pattern.sub(lambda m: os.environ[m.group(1)], text)
+
+
+PASSWORD_MASK_PATTERN = re.compile(
+    r"(?i)\b(clave|contrase[ñn]a|password|secret|token|pin)\b\s*[:=]\s*(?!\[REDACTED\])(\S+)"
+)
+TARGET_SENSITIVE_PARAM_PATTERN = re.compile(
+    r"(?i)(?:[?&;]|\b)(clave|contrase[ñn]a|password|secret|token|pin)\s*[:=]\s*([^&\s'\"]+)"
+)
+URL_CREDENTIAL_PATTERN = re.compile(r"https?://([^:]+):([^@\s]+)@")
+CEDULA_PATTERN = re.compile(r"\b[VEve][\s\.-]*(?:\d{1,3}(?:[.\s]\d{3}){1,3}|\d{6,9})(?!-\d)\b")
+RIF_PATTERN = re.compile(
+    r"\b(?:[JjGg][\s\.-]*(?:\d{1,3}(?:[.\s]\d{3}){1,3}|\d{8,9})(?:[\s\.-]*\d)?|[VvEePp][\s\.-]*(?:\d{1,3}(?:[.\s]\d{3}){1,3}|\d{6,9})[\s\.-]*\d)\b"
+)
+EMAIL_PATTERN = re.compile(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+")
+JWT_PATTERN = re.compile(r"\beyJ[a-zA-Z0-9_=-]{10,}\.[a-zA-Z0-9_=-]{10,}\.[a-zA-Z0-9_=-]{10,}\b")
+
+
+def _mask_error_message(error_msg: str, step: StepDefinition, test_case: TestCase) -> str:
+    """Mask step.value, step.target credentials, PII patterns, and credential patterns in error message."""
+    if step.value and len(step.value.strip()) > 0:
+        error_msg = error_msg.replace(step.value, "[REDACTED]")
+
+    if test_case.credentials:
+        for val in test_case.credentials.values():
+            if isinstance(val, str) and len(val.strip()) > 0:
+                error_msg = error_msg.replace(val, "[REDACTED]")
+
+    if step.target:
+        for m in TARGET_SENSITIVE_PARAM_PATTERN.finditer(step.target):
+            sensitive_val = m.group(2).strip(" '\"")
+            if sensitive_val and sensitive_val != "[REDACTED]":
+                error_msg = error_msg.replace(sensitive_val, "[REDACTED]")
+
+        for m in URL_CREDENTIAL_PATTERN.finditer(step.target):
+            sensitive_val = m.group(2).strip()
+            if sensitive_val and sensitive_val != "[REDACTED]":
+                error_msg = error_msg.replace(sensitive_val, "[REDACTED]")
+
+        for m in PASSWORD_MASK_PATTERN.finditer(step.target):
+            sensitive_val = m.group(2).strip(" '\"")
+            if sensitive_val and sensitive_val != "[REDACTED]":
+                error_msg = error_msg.replace(sensitive_val, "[REDACTED]")
+
+    error_msg = PASSWORD_MASK_PATTERN.sub(r"\1: [REDACTED]", error_msg)
+    error_msg = JWT_PATTERN.sub("[REDACTED]", error_msg)
+    error_msg = RIF_PATTERN.sub("[REDACTED]", error_msg)
+    error_msg = CEDULA_PATTERN.sub("[REDACTED]", error_msg)
+    error_msg = EMAIL_PATTERN.sub("[REDACTED]", error_msg)
+    return error_msg
 
 
 class DocRunner:
@@ -49,6 +116,53 @@ class DocRunner:
 
         self.screenshots_dir.mkdir(parents=True, exist_ok=True)
 
+    def _check_normalization_gate(self, test_case: TestCase) -> None:
+        """Check normalization status before opening browser or executing steps.
+
+        If status is NEEDS_INFO or UNSUPPORTED, prints path to <stem>.gaps.md if present
+        and terminates immediately with exit code 2.
+        """
+        status = (test_case.normalization_status or "").strip().upper()
+        if status in ("NEEDS_INFO", "UNSUPPORTED"):
+            if test_case.source_file:
+                source_p = Path(test_case.source_file)
+                gaps_p = source_p.with_name(f"{source_p.stem}.gaps.md")
+                if gaps_p.is_file():
+                    print(str(gaps_p.resolve()))
+            sys.exit(2)
+
+    def _expand_environment_variables(self, test_case: TestCase) -> None:
+        """Expand ${VAR} references in credentials and fill step values using os.environ."""
+        if test_case.credentials:
+            expanded_creds: dict[str, str] = {}
+            for k, v in test_case.credentials.items():
+                if isinstance(v, str) and "${" in v:
+                    expanded_creds[k] = _expand_env_vars(v)
+                else:
+                    expanded_creds[k] = v
+            test_case.credentials = expanded_creds
+
+        for step in test_case.steps:
+            if step.action.lower() in ("fill", "input", "type", "keyboard") and step.value and "${" in step.value:
+                step.value = _expand_env_vars(step.value)
+
+    def _launch_and_execute(
+        self,
+        test_case: TestCase,
+        base_url: str | None = None,
+    ) -> ExecutionReport:
+        """Launch Playwright browser context and execute test case."""
+        with sync_playwright() as playwright:
+            browser = playwright.chromium.launch(headless=self.headless)
+            context = browser.new_context()
+            new_page = context.new_page()
+            new_page.set_default_timeout(self.default_timeout)
+            try:
+                return self._execute_test_case(test_case=test_case, page=new_page, base_url=base_url)
+            finally:
+                context.close()
+                browser.close()
+
     def run_test_case(
         self,
         test_case: TestCase,
@@ -68,19 +182,25 @@ class DocRunner:
         Returns:
             Populated ExecutionReport model with step results and telemetry.
         """
+        # 1. Pre-flight Gate
+        self._check_normalization_gate(test_case)
+
+        # 2. Expand ${VAR} in credentials and fill values
+        self._expand_environment_variables(test_case)
+
         if page is not None:
             return self._execute_test_case(test_case=test_case, page=page, base_url=base_url)
 
-        with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(headless=self.headless)
-            context = browser.new_context()
-            new_page = context.new_page()
-            new_page.set_default_timeout(self.default_timeout)
-            try:
-                return self._execute_test_case(test_case=test_case, page=new_page, base_url=base_url)
-            finally:
-                context.close()
-                browser.close()
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
+
+        if loop is not None and loop.is_running():
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                return executor.submit(self._launch_and_execute, test_case, base_url).result()
+
+        return self._launch_and_execute(test_case, base_url)
 
     def run_document(
         self,
@@ -99,6 +219,7 @@ class DocRunner:
             ExecutionReport containing execution telemetry and step verdicts.
         """
         test_case = DocParser.parse(doc_path)
+        self._check_normalization_gate(test_case)
         report = self.run_test_case(test_case=test_case, base_url=base_url)
 
         if output_report_path:
@@ -118,11 +239,14 @@ class DocRunner:
         start_time = time.perf_counter()
         step_results: list[StepResult] = []
 
-        resolved_base_url = (
-            base_url
-            or test_case.url
-            or os.getenv("QA_BASE_URL", "https://qasys2000.lamundialdeseguros.com/#/login")
-        )
+        if test_case.normalization_status is not None:
+            resolved_base_url = base_url or test_case.url or ""
+        else:
+            resolved_base_url = (
+                base_url
+                or test_case.url
+                or os.getenv("QA_BASE_URL", "")
+            )
 
         for step in test_case.steps:
             step_start = time.perf_counter()
@@ -136,7 +260,8 @@ class DocRunner:
                 screenshot_path = self._capture_screenshot(page, f"step_{step.step_num}.png")
             except Exception as exc:  # noqa: BLE001
                 passed = False
-                error_msg = f"{type(exc).__name__}: {exc}"
+                raw_error = f"{type(exc).__name__}: {exc}"
+                error_msg = _mask_error_message(raw_error, step, test_case)
                 screenshot_path = self._capture_screenshot(page, f"step_{step.step_num}_failed.png")
 
             duration_ms = (time.perf_counter() - step_start) * 1000.0
@@ -155,16 +280,32 @@ class DocRunner:
             if not passed and self.stop_on_failure:
                 break
 
+        # Append manual steps
+        next_step_num = len(step_results) + 1
+        for manual_text in test_case.manual_steps:
+            step_results.append(
+                StepResult(
+                    step_num=next_step_num,
+                    action="manual",
+                    target=manual_text,
+                    status="MANUAL",
+                    duration_ms=0.0,
+                    screenshot_path=None,
+                    error_message=None,
+                )
+            )
+            next_step_num += 1
+
         finished_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         total_duration = time.perf_counter() - start_time
 
-        overall_status = (
-            "PASSED"
-            if step_results and all(s.status.upper() == "PASSED" for s in step_results)
-            else ("FAILED" if any(s.status.upper() == "FAILED" for s in step_results) else "PASSED")
-        )
-        if not step_results and test_case.steps:
+        has_failed = any(s.status.upper() == "FAILED" for s in step_results)
+        if has_failed:
             overall_status = "FAILED"
+        elif test_case.manual_steps:
+            overall_status = "PARTIAL"
+        else:
+            overall_status = "PASSED"
 
         return ExecutionReport(
             case_id=test_case.case_id,
@@ -196,31 +337,51 @@ class DocRunner:
             and (not current_url or current_url.startswith("about:"))
             and route != "navigate"
         ):
-            login_page = LoginPage(page)
-            login_page.navigate(base_url)
+            if test_case.normalization_status is not None and not base_url:
+                raise ValueError("Missing base URL for normalized test case with interactive steps")
+            if base_url:
+                login_page = LoginPage(page)
+                login_page.navigate(base_url)
 
         # 1. Navigation / Login route
         if route == "navigate":
             target_url = (
                 step.target
-                if step.target.startswith(("http://", "https://"))
+                if step.target.startswith(("http://", "https://", "file://", "about:"))
                 else base_url
             )
+            if test_case.normalization_status is not None and not target_url:
+                raise ValueError("Missing target URL for navigation step in normalized test case")
             login_page = LoginPage(page)
-            login_page.navigate(target_url)
+            if target_url:
+                login_page.navigate(target_url)
             return
 
         if route == "login":
-            username = (
-                test_case.credentials.get("username")
-                or test_case.credentials.get("usuario")
-                or os.getenv("QA_USERNAME", "rmuñoz")
-            )
-            password = (
-                test_case.credentials.get("password")
-                or test_case.credentials.get("clave")
-                or os.getenv("QA_PASSWORD", "rmuñoz")
-            )
+            if test_case.normalization_status is not None:
+                username = (
+                    test_case.credentials.get("username")
+                    or test_case.credentials.get("usuario")
+                    or ""
+                )
+                password = (
+                    test_case.credentials.get("password")
+                    or test_case.credentials.get("clave")
+                    or ""
+                )
+                if not username or not password:
+                    raise ValueError("Missing login credentials for normalized test case")
+            else:
+                username = (
+                    test_case.credentials.get("username")
+                    or test_case.credentials.get("usuario")
+                    or os.getenv("QA_USERNAME", "")
+                )
+                password = (
+                    test_case.credentials.get("password")
+                    or test_case.credentials.get("clave")
+                    or os.getenv("QA_PASSWORD", "")
+                )
             login_page = LoginPage(page)
             login_page.login(username, password)
             return
@@ -325,11 +486,30 @@ class DocRunner:
 
         elif action in ("fill", "input", "type", "keyboard"):
             val = step.value or ""
+            target_lower = clean_target.lower()
             if not val:
-                if "usuario" in clean_target.lower() or "user" in clean_target.lower():
-                    val = test_case.credentials.get("username", "")
-                elif "clave" in clean_target.lower() or "password" in clean_target.lower():
-                    val = test_case.credentials.get("password", "")
+                if "usuario" in target_lower or "user" in target_lower:
+                    val = (
+                        test_case.credentials.get("username")
+                        or test_case.credentials.get("usuario")
+                        or ""
+                    )
+                elif any(k in target_lower for k in ("clave", "password", "contraseña", "contrasena")):
+                    val = (
+                        test_case.credentials.get("password")
+                        or test_case.credentials.get("clave")
+                        or ""
+                    )
+
+            if (
+                test_case.normalization_status is not None
+                and not val
+                and any(
+                    k in target_lower
+                    for k in ("usuario", "user", "clave", "password", "contraseña", "contrasena")
+                )
+            ):
+                raise ValueError("Missing credential value for normalized test case step")
 
             locator = self._locate_for_fill(page, clean_target)
             locator.fill(val, timeout=self.default_timeout)
@@ -337,11 +517,12 @@ class DocRunner:
         elif action in ("goto", "navigate"):
             target_url = (
                 step.target
-                if step.target.startswith(("http://", "https://"))
+                if step.target.startswith(("http://", "https://", "file://", "about:"))
                 else base_url
             )
-            page.goto(target_url, timeout=self.default_timeout)
-            page.wait_for_load_state("networkidle")
+            if target_url:
+                page.goto(target_url, timeout=self.default_timeout)
+                page.wait_for_load_state("networkidle")
 
         elif action in ("verify", "assert"):
             loc = page.get_by_text(clean_target, exact=False).first
@@ -514,7 +695,7 @@ def main(args: list[str] | None = None) -> int:
     )
     if parsed.output_report:
         print(f"Executive PDF Report saved to: {parsed.output_report}")
-    return 0 if report.status.upper() == "PASSED" else 1
+    return 0 if report.status.upper() in ("PASSED", "PARTIAL") else 1
 
 
 if __name__ == "__main__":
