@@ -37,16 +37,16 @@ def sample_docx_path(tmp_path: Path) -> Path:
     table.rows[3].cells[2].text = "QA"
     
     table.rows[4].cells[0].text = "Analista Programador"
-    table.rows[4].cells[1].text = "Gabriel Estacio"
-    table.rows[4].cells[2].text = "Gabriel Estacio"
+    table.rows[4].cells[1].text = "QA Tester"
+    table.rows[4].cells[2].text = "QA Tester"
     
     # Paragraphs for URL, title, objective, and credentials
-    doc.add_paragraph("Link: https://qasys2000.lamundialdeseguros.com/#/login")
+    doc.add_paragraph("Link: https://qa.example.test/login")
     doc.add_paragraph("Caso # 3: Usuario para Reportería")
     doc.add_paragraph("Objetivo de la Prueba")
     doc.add_paragraph("Verificar el funcionamiento de la creación y edición de usuarios.")
-    doc.add_paragraph("Usuario: rmuñoz")
-    doc.add_paragraph("Clave: rmuñoz")
+    doc.add_paragraph("Usuario: test_user")
+    doc.add_paragraph("Clave: test_password")
     
     # Noise paragraphs
     doc.add_paragraph("Step 1 screenshot.")
@@ -82,11 +82,11 @@ def sample_pdf_path(tmp_path: Path) -> Path:
     c.drawString(50, 780, "Módulo: Pasarela")
     c.drawString(50, 760, "Título: Usuario para Reportería")
     c.drawString(50, 740, "Objetivo: Validar creación de usuario para reportería")
-    c.drawString(50, 720, "Link: https://qasys2000.lamundialdeseguros.com/#/login")
+    c.drawString(50, 720, "Link: https://qa.example.test/login")
     c.drawString(50, 700, "Ambiente: QA")
-    c.drawString(50, 680, "Analista: Gabriel Estacio")
-    c.drawString(50, 660, "Usuario: rmuñoz")
-    c.drawString(50, 640, "Clave: rmuñoz")
+    c.drawString(50, 680, "Analista: QA Tester")
+    c.drawString(50, 660, "Usuario: test_user")
+    c.drawString(50, 640, "Clave: test_password")
     
     c.drawString(50, 600, 'Step 1: (9/2/2026 3:21:33 PM) User left click on "Mantenimiento (link)" in "Browser"')
     c.drawString(50, 580, 'Step 2: (9/2/2026 3:21:34 PM) User left click on "Seguridad (link)" in "Browser"')
@@ -105,11 +105,11 @@ def test_docx_parser_with_sample_fixture(sample_docx_path: Path):
     assert test_case.module == "Pasarela"
     assert "Usuario para Reportería" in test_case.title
     assert "creación y edición de usuarios" in test_case.objective
-    assert test_case.credentials.get("username") == "rmuñoz"
-    assert test_case.credentials.get("password") == "rmuñoz"
-    assert test_case.url == "https://qasys2000.lamundialdeseguros.com/#/login"
+    assert test_case.credentials.get("username") == "test_user"
+    assert test_case.credentials.get("password") == "test_password"
+    assert test_case.url == "https://qa.example.test/login"
     assert test_case.environment == "QA"
-    assert test_case.developer == "Gabriel Estacio"
+    assert test_case.developer == "QA Tester"
     
     assert len(test_case.steps) == 3
     assert test_case.steps[0].step_num == 2
@@ -135,11 +135,11 @@ def test_docx_parser_with_production_document():
     assert test_case.module == "Pasarela"
     assert "Usuario para Reportería" in test_case.title
     assert "Verificar el funcionamiento" in test_case.objective
-    assert test_case.credentials.get("username") == "rmuñoz"
-    assert test_case.credentials.get("password") == "rmuñoz"
-    assert test_case.url == "https://qasys2000.lamundialdeseguros.com/#/login"
+    assert bool(test_case.credentials.get("username"))
+    assert bool(test_case.credentials.get("password"))
+    assert bool(test_case.url and test_case.url.startswith("http"))
     assert test_case.environment == "QA"
-    assert test_case.developer == "Gabriel Estacio"
+    assert bool(test_case.developer)
     
     # The production document contains 170 action steps
     assert len(test_case.steps) == 170
@@ -161,11 +161,11 @@ def test_pdf_parser_with_sample_fixture(sample_pdf_path: Path):
     assert test_case.module == "Pasarela"
     assert test_case.title == "Usuario para Reportería"
     assert "Validar creación de usuario" in test_case.objective
-    assert test_case.credentials.get("username") == "rmuñoz"
-    assert test_case.credentials.get("password") == "rmuñoz"
-    assert test_case.url == "https://qasys2000.lamundialdeseguros.com/#/login"
+    assert test_case.credentials.get("username") == "test_user"
+    assert test_case.credentials.get("password") == "test_password"
+    assert test_case.url == "https://qa.example.test/login"
     assert test_case.environment == "QA"
-    assert test_case.developer == "Gabriel Estacio"
+    assert test_case.developer == "QA Tester"
     
     assert len(test_case.steps) == 3
     assert test_case.steps[0].step_num == 1

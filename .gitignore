@@ -8,3 +8,9 @@ allure-results/
 htmlcov/
 artifacts/
 test-evidence/
+build/
+docs-qa/
+normalized/
+.env
+.env.*
+*.env

@@ -56,7 +56,7 @@ def mock_html_page(tmp_path: Path) -> Path:
 @pytest.fixture
 def mock_base_url(mock_html_page: Path) -> str:
     """Returns local file URL for the mock HTML page."""
-    return f"file://{mock_html_page.resolve()}"
+    return mock_html_page.resolve().as_uri()
 
 
 @pytest.fixture
