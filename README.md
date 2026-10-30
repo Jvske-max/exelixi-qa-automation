@@ -152,9 +152,46 @@ If you want to run the automated framework checks:
 - **Q: It says `playwright: command not found` or the browser doesn't open.**  
   👉 Ensure your virtual environment is active (you see `(.venv)` in your terminal prompt) and run `playwright install chromium`.
 - **Q: How do I customize Sys2000 test credentials?**  
-  👉 Tests default to QA test user `rmuñoz`. If you have a custom test user, set them before running:
+  👉 Tests require credentials configured via environment variables or `.env` (`QA_USERNAME` and `QA_PASSWORD`), or use `test_user` as an example. Set them before running:
   - Mac/Linux: `export QA_USERNAME="your_user"` and `export QA_PASSWORD="your_password"`
   - Windows: `$env:QA_USERNAME="your_user"` and `$env:QA_PASSWORD="your_password"`
+
+---
+
+## 🧪 Normalizar una prueba
+
+Cuando recibes una prueba redactada con estilo libre (`.docx` o `.pdf`), utiliza el pipeline normalizador para convertirla al formato canónico ejecutable e identificar qué datos faltan.
+
+> [!NOTE]
+> **Nota sobre el enmascarado:** El proceso de enmascaramiento automático protege credenciales, correos electrónicos, cédulas (con y sin puntos), RIF y tokens JWT. **NO** cubre nombres de personas, números de póliza, teléfonos ni nombres de servidores internos. El archivo generado mediante `--dry-run` se almacena exclusivamente dentro de `build/<id>/` (directorio ignorado por Git).
+
+Ejecuta estos cinco pasos en PowerShell (cada uno en una sola línea):
+
+### 1. Extraer texto, metadatos y capturas del documento original
+```powershell
+python -m normalizer.extract build/sample/muestra.docx --out build/sample/dump
+```
+
+### 2. Normalizar con el sub-agente IA
+```powershell
+agy "Normaliza build/sample/muestra.docx usando build/sample/dump. Escribe normalized/muestra.json y valídalo."
+```
+
+### 3. Validar esquema y reglas de grounding
+```powershell
+python -m normalizer.cli validate normalized/muestra.json
+```
+
+### 4. Renderizar a especificación canónica (.docx) y reporte de faltantes (.gaps.md)
+```powershell
+python -m normalizer.cli render normalized/muestra.json --out normalized/
+```
+
+### 5. Ejecutar el caso normalizado con el runner
+```powershell
+python -m runners.doc_runner --doc normalized/R-SAMPLE-01-caso1.docx --output-report artifacts/reporte_caso1.pdf
+```
+*(Si un caso tiene estado `NEEDS_INFO` o `UNSUPPORTED`, el runner no abrirá el navegador, imprimirá la ruta de su archivo `.gaps.md` adyacente y saldrá inmediatamente con código 2).*
 
 ---
 

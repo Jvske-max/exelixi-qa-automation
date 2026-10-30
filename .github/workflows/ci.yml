@@ -6,21 +6,50 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+
 jobs:
   test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
-          playwright install chromium --with-deps
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
-      - name: Run Smoke Tests
-        run: pytest -m smoke
+      - name: Install Playwright Chromium (Linux)
+        if: runner.os == 'Linux'
+        run: python -m playwright install --with-deps chromium
+
+      - name: Install Playwright Chromium (Windows)
+        if: runner.os == 'Windows'
+        run: python -m playwright install chromium
+
+      - name: Run linter
+        run: python -m ruff check .
+
+      - name: Run smoke tests
+        run: python -m pytest -m smoke -q
+
+      - name: Run unit and integration tests
+        run: python -m pytest tests/unit tests/integration -q --basetemp=build/pytest_temp
+
+      - name: Upload PDF evidence reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-pdf-reports-${{ matrix.os }}
+          path: build/pytest_temp/**/*.pdf
+          if-no-files-found: ignore

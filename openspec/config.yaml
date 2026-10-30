@@ -3,14 +3,14 @@ schema: spec-driven
 context: |
   Tech stack: Python 3.13, pytest, pytest-playwright, Playwright, FastAPI, Requests, Allure
   Architecture: Page Object Model (POM), layered test automation, FastAPI mocks
-  Testing: pytest (.venv/bin/pytest) with smoke, api, e2e markers
+  Testing: pytest (python -m pytest) with smoke, api, e2e markers
   Project: QA Automation Framework for Exelixi insurance platform
 
 strict_tdd: true
 
 testing:
   runner:
-    command: ".venv/bin/pytest"
+    command: "python -m pytest"
     framework: "pytest"
   layers:
     unit:
@@ -24,11 +24,11 @@ testing:
       tool: "pytest-playwright"
   coverage:
     available: true
-    command: ".venv/bin/pytest --cov"
+    command: "python -m pytest --cov"
   quality:
     linter:
       available: true
-      command: ".venv/bin/ruff check"
+      command: "python -m ruff check"
     type_checker:
       available: false
       command: null
@@ -54,9 +54,9 @@ rules:
       - Keep selectors private to Page Object classes
       - Never hardcode credentials or production URLs
     tdd: true
-    test_command: ".venv/bin/pytest -m smoke -q"
+    test_command: "python -m pytest -m smoke -q"
   verify:
-    test_command: ".venv/bin/pytest"
+    test_command: "python -m pytest"
     build_command: ""
     coverage_threshold: 0
   archive:
