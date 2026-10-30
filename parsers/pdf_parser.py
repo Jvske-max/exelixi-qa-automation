@@ -83,6 +83,22 @@ class PdfParser:
             credentials["password"] = pass_val
             credentials["clave"] = pass_val
 
+        # Extract normalization_status
+        m_norm = re.search(
+            r"(?:^|\n)\s*(?:Estado(?:\s+de)?\s+normalizaci[oó]n|Normalization\s*status)\s*[:=]?\s*([A-Za-z_]+)",
+            full_text,
+            re.IGNORECASE,
+        )
+        normalization_status = m_norm.group(1).strip() if m_norm else None
+
+        # Extract manual steps
+        manual_steps: list[str] = []
+        for line in full_text.splitlines():
+            clean = line.replace("\u200e", "").replace("\u200f", "").strip()
+            m_man = re.match(r"^Pendiente\s+manual\s+\d+[:.]\s*(.*)$", clean, re.IGNORECASE)
+            if m_man:
+                manual_steps.append(m_man.group(1).strip())
+
         # Fallback for case_id
         if not case_id:
             m_id = re.search(r"(R-\d+)", path.name)
@@ -102,6 +118,8 @@ class PdfParser:
             environment=environment,
             developer=developer,
             url=url,
+            normalization_status=normalization_status,
+            manual_steps=manual_steps,
         )
 
     @classmethod

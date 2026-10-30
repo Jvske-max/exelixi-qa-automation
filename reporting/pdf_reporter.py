@@ -168,10 +168,16 @@ class PDFReporter:
         )
 
     def _build_header(self, report: ExecutionReport) -> Table:
-        """Construct the executive header containing brand, scenario, and status badge."""
-        is_passed = report.status.upper() == "PASSED"
-        badge_bg = colors.HexColor("#16A34A") if is_passed else colors.HexColor("#DC2626")
-        badge_text = "PASSED" if is_passed else "FAILED"
+        status_upper = report.status.upper()
+        if status_upper == "PASSED":
+            badge_bg = colors.HexColor("#16A34A")
+            badge_text = "PASSED"
+        elif status_upper == "PARTIAL":
+            badge_bg = colors.HexColor("#D97706")
+            badge_text = "PARTIAL"
+        else:
+            badge_bg = colors.HexColor("#DC2626")
+            badge_text = "FAILED"
 
         badge_p = Paragraph(f"<b>{badge_text}</b>", self.badge_style)
         badge_table = Table([[badge_p]], colWidths=[120], rowHeights=[32])
@@ -210,7 +216,10 @@ class PDFReporter:
 
     def _build_metadata_grid(self, report: ExecutionReport) -> Table:
         """Construct the structured test run metadata grid."""
-        result_summary = f"{report.passed_count} Aprobados / {report.failed_count} Fallidos"
+        result_parts = [f"{report.passed_count} Aprobados", f"{report.failed_count} Fallidos"]
+        if getattr(report, "manual_count", 0) > 0:
+            result_parts.append(f"{report.manual_count} Manuales")
+        result_summary = " / ".join(result_parts)
         grid_data = [
             [
                 Paragraph("Caso ID:", self.meta_label_style),
@@ -307,9 +316,14 @@ class PDFReporter:
             table_data.append(empty_row)
         else:
             for step in steps:
-                step_passed = step.status.upper() == "PASSED"
-                status_color = "#16A34A" if step_passed else "#DC2626"
-                status_html = f"<font color='{status_color}'><b>{step.status.upper()}</b></font>"
+                step_status = step.status.upper()
+                if step_status == "PASSED":
+                    status_color = "#16A34A"
+                elif step_status == "MANUAL":
+                    status_color = "#D97706"
+                else:
+                    status_color = "#DC2626"
+                status_html = f"<font color='{status_color}'><b>{step_status}</b></font>"
 
                 detail_html = f"<b>{step.target}</b>"
                 if step.error_message:

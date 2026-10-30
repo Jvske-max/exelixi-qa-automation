@@ -133,6 +133,22 @@ class DocxParser:
                 credentials["password"] = m_pass.group(1).strip()
                 credentials["clave"] = m_pass.group(1).strip()
 
+        normalization_status = (
+            table_data.get("estado de normalización")
+            or table_data.get("estado de normalizacion")
+            or None
+        )
+        if normalization_status:
+            normalization_status = normalization_status.strip()
+
+        # Extract manual steps
+        manual_steps: list[str] = []
+        for text in paragraphs:
+            clean = text.replace("\u200e", "").replace("\u200f", "").strip()
+            m_man = re.match(r"^Pendiente\s+manual\s+\d+[:.]\s*(.*)$", clean, re.IGNORECASE)
+            if m_man:
+                manual_steps.append(m_man.group(1).strip())
+
         # Fallbacks for metadata
         if not title:
             title = title_from_table or path.stem
@@ -156,6 +172,8 @@ class DocxParser:
             environment=environment,
             developer=developer,
             url=url,
+            normalization_status=normalization_status,
+            manual_steps=manual_steps,
         )
 
     @classmethod

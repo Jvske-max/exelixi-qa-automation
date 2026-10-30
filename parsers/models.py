@@ -33,6 +33,8 @@ class TestCase:
     environment: str = "QA"
     developer: str = "Exelixi QA"
     url: str | None = None
+    normalization_status: str | None = None
+    manual_steps: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -72,6 +74,11 @@ class ExecutionReport:
     def failed_count(self) -> int:
         """Count of steps with FAILED status."""
         return sum(1 for step in self.steps if step.status.upper() == "FAILED")
+
+    @property
+    def manual_count(self) -> int:
+        """Count of steps with MANUAL status."""
+        return sum(1 for step in self.steps if step.status.upper() == "MANUAL")
 
     @property
     def total_steps(self) -> int:
