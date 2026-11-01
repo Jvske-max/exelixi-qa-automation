@@ -111,7 +111,7 @@ collecting ... collected 7 items
 
 **Verdict:** **PASS**
 
-All acceptance and success criteria defined in [proposal.md](file:///home/fernandojosesilvatrejo/Documents/9no%20Semestre/QA_AUTOMATIZACI%C3%93N/openspec/changes/vertical-slice-automation/proposal.md) are met:
+All acceptance and success criteria defined in [proposal.md](proposal.md) are met:
 1. `.venv/bin/pytest -m "smoke or api"` passes deterministically in under 3 seconds (0.34s).
 2. `tests/api/test_ocr_service.py` comprehensively covers positive extraction, 422 illegible payload handling, and timeout scenarios.
 3. `pageobjects/user_management_page.py` exposes business actions automating manual case R-055429 adhering to Page Object Model best practices.

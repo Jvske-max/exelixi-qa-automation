@@ -16,7 +16,7 @@ The `doc-driven-testing` change automates the end-to-end QA lifecycle from devel
 
 ## 2. Tasks Completion Status
 
-All items in [tasks.md](file:///home/fernandojosesilvatrejo/Documents/9no%20Semestre/QA_AUTOMATIZACI%C3%93N/openspec/changes/doc-driven-testing/tasks.md) across Phases 1 through 5 are verified as completed:
+All items in [tasks.md](tasks.md) across Phases 1 through 5 are verified as completed:
 
 | Phase | Description | Status | Pass Rate |
 |---|---|:---:|:---:|
@@ -26,7 +26,7 @@ All items in [tasks.md](file:///home/fernandojosesilvatrejo/Documents/9no%20Seme
 | **Phase 4** | Test Dispatcher & Execution Engine (`doc_runner.py` with Playwright) | Completed `[x]` | 100% |
 | **Phase 5** | Verification & Quality Audit (Ruff linting, Pytest, PDF visual audit) | Completed `[x]` | 100% |
 
-All success criteria from [proposal.md](file:///home/fernandojosesilvatrejo/Documents/9no%20Semestre/QA_AUTOMATIZACI%C3%93N/openspec/changes/doc-driven-testing/proposal.md) are satisfied:
+All success criteria from [proposal.md](proposal.md) are satisfied:
 - [x] Parser correctly extracts Case ID, steps, and credentials from `pruebas QA # 1 R-055429...docx`.
 - [x] Runner executes parsed steps with Playwright and captures screenshot evidence.
 - [x] A formatted PDF report is produced containing execution verdict, metadata, and visual evidence.
