@@ -253,7 +253,7 @@ El framework incluye 227 pruebas automatizadas que certifican cada componente:
 | **Linter & Formato** | **0 advertencias** | Verificado con `ruff` (`line-length = 100`) |
 | **Integración Continua** | **Multi-OS Matrix** | GitHub Actions ejecutando pruebas simultáneamente en Ubuntu y Windows |
 | **Gobernanza SDD** | **OpenSpec v1** | 5 especificaciones canónicas vivas y 5 cambios archivados con auditoría formal |
-| **Auditoría de Seguridad** | **Certificación Aprobada** | Cero contraseñas expuestas, cero URLs de producción, enmascaramiento activo de PII |
+| **Auditoría de Seguridad** | **Auditado por `code-auditor`** | Auditoría interna automatizada con subagente de IA: cero contraseñas expuestas, cero URLs de producción, enmascaramiento activo de PII |
 
 ---
 

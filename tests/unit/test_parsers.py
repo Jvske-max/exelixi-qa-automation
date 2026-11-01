@@ -9,7 +9,7 @@ from reportlab.pdfgen import canvas
 from parsers import DocParser, DocxParser, PdfParser
 from parsers.models import StepDefinition, TestCase
 
-PROD_DOCX_PATH = Path("pruebas QA # 1 R-055429_mantenimiento_usuarios_usuario_para_reporteria fecha 24092026.docx")
+PROD_DOCX_PATH = Path("docs-qa/sample_case.docx")
 
 
 @pytest.fixture

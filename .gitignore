@@ -14,3 +14,6 @@ normalized/
 .env
 .env.*
 *.env
+
+*.docx
+pruebas_QA_parsed.txt
