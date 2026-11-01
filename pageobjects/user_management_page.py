@@ -31,11 +31,11 @@ class UserManagementPage:
         seguridad.click()
         self.page.wait_for_load_state("domcontentloaded")
 
-    def navigate_to_user_management(self):
+    def navigate_to_user_management(self) -> None:
         self.click_mantenimiento()
         self.click_seguridad()
 
-    def open_add_user_form(self):
+    def open_add_user_form(self) -> None:
         add_btn = self.page.locator(self._add_user_button).first
         expect(add_btn).to_be_visible(timeout=10000)
         add_btn.click()
@@ -43,7 +43,7 @@ class UserManagementPage:
         modal_or_user_input = self.page.locator(f"{self._modal_dialog}, {self._username_input}").first
         expect(modal_or_user_input).to_be_visible(timeout=10000)
 
-    def fill_user_form(self, username: str, email: str, password: str, confirm_password: str):
+    def fill_user_form(self, username: str, email: str, password: str, confirm_password: str) -> None:
         if username:
             user_field = self.page.locator(self._username_input).first
             expect(user_field).to_be_visible(timeout=5000)
@@ -64,7 +64,7 @@ class UserManagementPage:
             expect(confirm_pwd_field).to_be_visible(timeout=5000)
             confirm_pwd_field.fill(confirm_password)
 
-    def save_user(self):
+    def save_user(self) -> None:
         save_btn = self.page.locator(self._save_button).first
         expect(save_btn).to_be_visible(timeout=5000)
         save_btn.click()

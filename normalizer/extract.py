@@ -69,13 +69,13 @@ def _extract_docx(doc_path: Path, out_dir: Path) -> dict[str, Any]:
 
     # Detect test cases
     case_starts: list[tuple[int, str, int]] = []
-    for p in paragraphs_data:
-        m = CASE_PATTERN.match(p["text"])
+    for p_data in paragraphs_data:
+        m = CASE_PATTERN.match(p_data["text"])
         if m:
             n = int(m.group(1))
             raw_title = m.group(2).strip()
-            title = raw_title if raw_title else p["text"].strip()
-            case_starts.append((n, title, p["line"]))
+            title = raw_title if raw_title else p_data["text"].strip()
+            case_starts.append((n, title, p_data["line"]))
 
     cases: list[dict[str, Any]] = []
     if case_starts:
@@ -111,8 +111,8 @@ def _extract_docx(doc_path: Path, out_dir: Path) -> dict[str, Any]:
     for val in meta.values():
         if isinstance(val, str):
             found_links.extend(URL_PATTERN.findall(val))
-    for p in paragraphs_data:
-        found_links.extend(URL_PATTERN.findall(p["text"]))
+    for p_data in paragraphs_data:
+        found_links.extend(URL_PATTERN.findall(p_data["text"]))
 
     links = list(dict.fromkeys(found_links))
 

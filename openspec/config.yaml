@@ -14,11 +14,11 @@ testing:
     framework: "pytest"
   layers:
     unit:
-      available: false
-      tool: null
+      available: true
+      tool: "pytest"
     integration:
       available: true
-      tool: "requests / fastapi testclient"
+      tool: "pytest, httpx, requests, FastAPI TestClient"
     e2e:
       available: true
       tool: "pytest-playwright"
@@ -30,11 +30,11 @@ testing:
       available: true
       command: "python -m ruff check"
     type_checker:
-      available: false
-      command: null
+      available: true
+      command: "python -m mypy normalizer pageobjects parsers reporting runners tools"
     formatter:
-      available: false
-      command: null
+      available: true
+      command: "python -m ruff format"
 
 rules:
   proposal:

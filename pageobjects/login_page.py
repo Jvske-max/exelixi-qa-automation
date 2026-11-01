@@ -10,11 +10,11 @@ class LoginPage:
         self._error_message = ".error-message, .alert-danger, [role='alert']"
         self._dashboard_element = ".dashboard, .main-menu, nav"
 
-    def navigate(self, url: str):
+    def navigate(self, url: str) -> None:
         self.page.goto(url)
         self.page.wait_for_load_state("networkidle")
 
-    def login(self, username, password):
+    def login(self, username: str, password: str) -> None:
         self.page.wait_for_selector(self._username_input, state="visible", timeout=10000)
         self.page.fill(self._username_input, username)
         
@@ -33,4 +33,5 @@ class LoginPage:
 
     def get_error_message(self) -> str:
         self.page.wait_for_selector(self._error_message, state="visible", timeout=5000)
-        return self.page.locator(self._error_message).first.text_content()
+        text = self.page.locator(self._error_message).first.text_content()
+        return text or ""

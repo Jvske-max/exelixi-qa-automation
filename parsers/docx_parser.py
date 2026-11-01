@@ -6,6 +6,7 @@ import re
 from pathlib import Path
 
 import docx
+from docx.document import Document as DocxDocument
 
 from parsers.models import StepDefinition, TestCase
 
@@ -177,7 +178,7 @@ class DocxParser:
         )
 
     @classmethod
-    def _extract_table_data(cls, doc: docx.Document) -> dict[str, str]:
+    def _extract_table_data(cls, doc: DocxDocument) -> dict[str, str]:
         """Extract key-value metadata from Word document tables."""
         data: dict[str, str] = {}
         for table in doc.tables:

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class Step(BaseModel):
@@ -32,20 +32,23 @@ class Case(BaseModel):
     credentials: dict[str, str] = Field(default_factory=dict)
     steps: list[Step] = Field(default_factory=list)
     gaps: list[Any] = Field(default_factory=list)
+    status: str = ""
 
-    @computed_field
-    @property
-    def status(self) -> str:
+    @model_validator(mode="after")
+    def _compute_status(self) -> Self:
         """Determine normalization status: NEEDS_INFO, UNSUPPORTED, or READY."""
-        for gap in self.gaps:
-            sev = getattr(gap, "severity", None) if not isinstance(gap, dict) else gap.get("severity")
-            if sev == "blocking":
-                return "NEEDS_INFO"
+        if not self.status:
+            for gap in self.gaps:
+                sev = getattr(gap, "severity", None) if not isinstance(gap, dict) else gap.get("severity")
+                if sev == "blocking":
+                    self.status = "NEEDS_INFO"
+                    return self
 
-        if not self.steps or all(s.action == "manual" for s in self.steps):
-            return "UNSUPPORTED"
-
-        return "READY"
+            if not self.steps or all(s.action == "manual" for s in self.steps):
+                self.status = "UNSUPPORTED"
+            else:
+                self.status = "READY"
+        return self
 
 
 class NormalizedDoc(BaseModel):
