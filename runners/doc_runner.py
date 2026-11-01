@@ -19,7 +19,12 @@ from pageobjects.login_page import LoginPage
 from pageobjects.user_management_page import UserManagementPage
 from parsers.doc_parser import DocParser
 from parsers.models import ExecutionReport, StepDefinition, StepResult, TestCase
+from reporting.allure_reporter import AllureReporter
 from reporting.pdf_reporter import PDFReporter
+
+
+class BlockedStepError(Exception):
+    """Raised when a step execution is blocked by external dependencies or unmet prerequisites."""
 
 
 def _expand_env_vars(text: str) -> str:
@@ -38,21 +43,27 @@ def _expand_env_vars(text: str) -> str:
 
 
 PASSWORD_MASK_PATTERN = re.compile(
-    r"(?i)\b(clave|contrase[ñn]a|password|secret|token|pin)\b\s*[:=]\s*(?!\[REDACTED\])(\S+)"
+    r"(?i)\b(clave|contrase[ñn]a|password|secret|token|pin)\b\s*[:=]\s*(?!\[REDACTED\]|['\"]\[REDACTED\]['\"])(?:(['\"])(.*?)\2|([^\s'\"]+))"
 )
 TARGET_SENSITIVE_PARAM_PATTERN = re.compile(
     r"(?i)(?:[?&;]|\b)(clave|contrase[ñn]a|password|secret|token|pin)\s*[:=]\s*([^&\s'\"]+)"
 )
-URL_CREDENTIAL_PATTERN = re.compile(r"https?://([^:]+):([^@\s]+)@")
-CEDULA_PATTERN = re.compile(r"\b[VEve][\s\.-]*(?:\d{1,3}(?:[.\s]\d{3}){1,3}|\d{6,9})(?!-\d)\b")
+URL_CREDENTIAL_PATTERN = re.compile(r"(https?://[^:\s]+):(?!\[REDACTED\])([^@\s]+)@")
+CEDULA_PATTERN = re.compile(
+    r"\b[VEve][\s\.-]*(?:\d{1,3}(?:[.\s]\d{3}){1,3}|\d{6,9})(?!-\d)\b"
+)
 RIF_PATTERN = re.compile(
     r"\b(?:[JjGg][\s\.-]*(?:\d{1,3}(?:[.\s]\d{3}){1,3}|\d{8,9})(?:[\s\.-]*\d)?|[VvEePp][\s\.-]*(?:\d{1,3}(?:[.\s]\d{3}){1,3}|\d{6,9})[\s\.-]*\d)\b"
 )
 EMAIL_PATTERN = re.compile(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+")
-JWT_PATTERN = re.compile(r"\beyJ[a-zA-Z0-9_=-]{10,}\.[a-zA-Z0-9_=-]{10,}\.[a-zA-Z0-9_=-]{10,}\b")
+JWT_PATTERN = re.compile(
+    r"\beyJ[a-zA-Z0-9_=-]{10,}\.[a-zA-Z0-9_=-]{10,}\.[a-zA-Z0-9_=-]{10,}\b"
+)
 
 
-def _mask_error_message(error_msg: str, step: StepDefinition, test_case: TestCase) -> str:
+def _mask_error_message(
+    error_msg: str, step: StepDefinition, test_case: TestCase
+) -> str:
     """Mask step.value, step.target credentials, PII patterns, and credential patterns in error message."""
     if step.value and len(step.value.strip()) > 0:
         error_msg = error_msg.replace(step.value, "[REDACTED]")
@@ -74,10 +85,12 @@ def _mask_error_message(error_msg: str, step: StepDefinition, test_case: TestCas
                 error_msg = error_msg.replace(sensitive_val, "[REDACTED]")
 
         for m in PASSWORD_MASK_PATTERN.finditer(step.target):
-            sensitive_val = m.group(2).strip(" '\"")
+            raw_val = m.group(3) if m.group(3) is not None else m.group(4)
+            sensitive_val = raw_val.strip(" '\"") if raw_val else ""
             if sensitive_val and sensitive_val != "[REDACTED]":
                 error_msg = error_msg.replace(sensitive_val, "[REDACTED]")
 
+    error_msg = URL_CREDENTIAL_PATTERN.sub(r"\1:[REDACTED]@", error_msg)
     error_msg = PASSWORD_MASK_PATTERN.sub(r"\1: [REDACTED]", error_msg)
     error_msg = JWT_PATTERN.sub("[REDACTED]", error_msg)
     error_msg = RIF_PATTERN.sub("[REDACTED]", error_msg)
@@ -95,6 +108,7 @@ class DocRunner:
         screenshots_dir: str | Path | None = None,
         default_timeout: int = 15000,
         stop_on_failure: bool = True,
+        allure_dir: str | Path | None = None,
     ) -> None:
         """Initialize the document test runner.
 
@@ -103,10 +117,12 @@ class DocRunner:
             screenshots_dir: Directory where step screenshots will be saved.
             default_timeout: Default action/navigation timeout in milliseconds.
             stop_on_failure: Whether to halt step execution on first failure.
+            allure_dir: Optional directory to output Allure v2 JSON execution reports.
         """
         self.headless = headless
         self.default_timeout = default_timeout
         self.stop_on_failure = stop_on_failure
+        self.allure_dir = Path(allure_dir) if allure_dir else None
 
         if screenshots_dir:
             self.screenshots_dir = Path(screenshots_dir)
@@ -143,13 +159,18 @@ class DocRunner:
             test_case.credentials = expanded_creds
 
         for step in test_case.steps:
-            if step.action.lower() in ("fill", "input", "type", "keyboard") and step.value and "${" in step.value:
+            if (
+                step.action.lower() in ("fill", "input", "type", "keyboard")
+                and step.value
+                and "${" in step.value
+            ):
                 step.value = _expand_env_vars(step.value)
 
     def _launch_and_execute(
         self,
         test_case: TestCase,
         base_url: str | None = None,
+        allure_dir: str | Path | None = None,
     ) -> ExecutionReport:
         """Launch Playwright browser context and execute test case."""
         with sync_playwright() as playwright:
@@ -158,7 +179,12 @@ class DocRunner:
             new_page = context.new_page()
             new_page.set_default_timeout(self.default_timeout)
             try:
-                return self._execute_test_case(test_case=test_case, page=new_page, base_url=base_url)
+                return self._execute_test_case(
+                    test_case=test_case,
+                    page=new_page,
+                    base_url=base_url,
+                    allure_dir=allure_dir,
+                )
             finally:
                 context.close()
                 browser.close()
@@ -168,6 +194,7 @@ class DocRunner:
         test_case: TestCase,
         base_url: str | None = None,
         page: Page | None = None,
+        allure_dir: str | Path | None = None,
     ) -> ExecutionReport:
         """Execute a parsed TestCase against a browser instance.
 
@@ -178,6 +205,7 @@ class DocRunner:
             test_case: The TestCase model containing steps and metadata.
             base_url: Optional base application URL overriding the test case default.
             page: Optional existing Playwright Page object.
+            allure_dir: Optional directory to output Allure v2 JSON execution reports.
 
         Returns:
             Populated ExecutionReport model with step results and telemetry.
@@ -188,8 +216,15 @@ class DocRunner:
         # 2. Expand ${VAR} in credentials and fill values
         self._expand_environment_variables(test_case)
 
+        effective_allure_dir = allure_dir if allure_dir is not None else self.allure_dir
+
         if page is not None:
-            return self._execute_test_case(test_case=test_case, page=page, base_url=base_url)
+            return self._execute_test_case(
+                test_case=test_case,
+                page=page,
+                base_url=base_url,
+                allure_dir=effective_allure_dir,
+            )
 
         try:
             loop = asyncio.get_running_loop()
@@ -198,15 +233,21 @@ class DocRunner:
 
         if loop is not None and loop.is_running():
             with ThreadPoolExecutor(max_workers=1) as executor:
-                return executor.submit(self._launch_and_execute, test_case, base_url).result()
+                return executor.submit(
+                    self._launch_and_execute,
+                    test_case,
+                    base_url,
+                    effective_allure_dir,
+                ).result()
 
-        return self._launch_and_execute(test_case, base_url)
+        return self._launch_and_execute(test_case, base_url, effective_allure_dir)
 
     def run_document(
         self,
         doc_path: str | Path,
         output_report_path: str | Path | None = None,
         base_url: str | None = None,
+        allure_dir: str | Path | None = None,
     ) -> ExecutionReport:
         """Ingest a test specification document, execute steps, and optionally generate a PDF report.
 
@@ -214,13 +255,19 @@ class DocRunner:
             doc_path: Path to the .docx or .pdf specification document.
             output_report_path: Optional path where executive PDF report will be saved.
             base_url: Optional base application URL override.
+            allure_dir: Optional directory to output Allure v2 JSON execution reports.
 
         Returns:
             ExecutionReport containing execution telemetry and step verdicts.
         """
         test_case = DocParser.parse(doc_path)
         self._check_normalization_gate(test_case)
-        report = self.run_test_case(test_case=test_case, base_url=base_url)
+        effective_allure_dir = allure_dir if allure_dir is not None else self.allure_dir
+        report = self.run_test_case(
+            test_case=test_case,
+            base_url=base_url,
+            allure_dir=effective_allure_dir,
+        )
 
         if output_report_path:
             reporter = PDFReporter()
@@ -233,49 +280,82 @@ class DocRunner:
         test_case: TestCase,
         page: Page,
         base_url: str | None = None,
+        allure_dir: str | Path | None = None,
     ) -> ExecutionReport:
         """Internal execution loop iterating through steps, capturing telemetry and screenshots."""
         started_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         start_time = time.perf_counter()
         step_results: list[StepResult] = []
 
+        allure_reporter: AllureReporter | None = None
+        if allure_dir:
+            allure_reporter = AllureReporter(results_dir=allure_dir)
+            allure_reporter.start_test_case(test_case)
+
         if test_case.normalization_status is not None:
             resolved_base_url = base_url or test_case.url or ""
         else:
             resolved_base_url = (
-                base_url
-                or test_case.url
-                or os.getenv("QA_BASE_URL", "")
+                base_url or test_case.url or os.getenv("QA_BASE_URL") or ""
             )
 
         for step in test_case.steps:
+            if allure_reporter:
+                allure_reporter.start_step(step, step.step_num)
+
             step_start = time.perf_counter()
             screenshot_path: str | None = None
             error_msg: str | None = None
             passed = False
+            step_status = "PASSED"
 
-            try:
-                self._dispatch_step(page, step, test_case, resolved_base_url)
-                passed = True
-                screenshot_path = self._capture_screenshot(page, f"step_{step.step_num}.png")
-            except Exception as exc:  # noqa: BLE001
+            if step.action.lower() in ("blocked", "block"):
                 passed = False
-                raw_error = f"{type(exc).__name__}: {exc}"
-                error_msg = _mask_error_message(raw_error, step, test_case)
-                screenshot_path = self._capture_screenshot(page, f"step_{step.step_num}_failed.png")
+                step_status = "BLOCKED"
+                raw_blocked = f"Step execution blocked: {step.target}"
+                error_msg = _mask_error_message(raw_blocked, step, test_case)
+                screenshot_path = self._capture_screenshot(
+                    page, f"step_{step.step_num}_blocked.png"
+                )
+            else:
+                try:
+                    self._dispatch_step(page, step, test_case, resolved_base_url)
+                    passed = True
+                    step_status = "PASSED"
+                    screenshot_path = self._capture_screenshot(
+                        page, f"step_{step.step_num}.png"
+                    )
+                except BlockedStepError as exc:
+                    passed = False
+                    step_status = "BLOCKED"
+                    raw_error = f"{type(exc).__name__}: {exc}"
+                    error_msg = _mask_error_message(raw_error, step, test_case)
+                    screenshot_path = self._capture_screenshot(
+                        page, f"step_{step.step_num}_blocked.png"
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    passed = False
+                    step_status = "FAILED"
+                    raw_error = f"{type(exc).__name__}: {exc}"
+                    error_msg = _mask_error_message(raw_error, step, test_case)
+                    screenshot_path = self._capture_screenshot(
+                        page, f"step_{step.step_num}_failed.png"
+                    )
 
             duration_ms = (time.perf_counter() - step_start) * 1000.0
-            step_results.append(
-                StepResult(
-                    step_num=step.step_num,
-                    action=step.action,
-                    target=step.target,
-                    status="PASSED" if passed else "FAILED",
-                    duration_ms=round(duration_ms, 2),
-                    screenshot_path=screenshot_path,
-                    error_message=error_msg,
-                )
+            step_res = StepResult(
+                step_num=step.step_num,
+                action=step.action,
+                target=step.target,
+                status=step_status,
+                duration_ms=round(duration_ms, 2),
+                screenshot_path=screenshot_path,
+                error_message=error_msg,
             )
+            step_results.append(step_res)
+
+            if allure_reporter:
+                allure_reporter.stop_step(step, step_res)
 
             if not passed and self.stop_on_failure:
                 break
@@ -283,31 +363,48 @@ class DocRunner:
         # Append manual steps
         next_step_num = len(step_results) + 1
         for manual_text in test_case.manual_steps:
-            step_results.append(
-                StepResult(
-                    step_num=next_step_num,
-                    action="manual",
-                    target=manual_text,
-                    status="MANUAL",
-                    duration_ms=0.0,
-                    screenshot_path=None,
-                    error_message=None,
-                )
+            manual_step = StepDefinition(
+                step_num=next_step_num,
+                raw_text=manual_text,
+                action="manual",
+                target=manual_text,
             )
+            if allure_reporter:
+                allure_reporter.start_step(manual_step, next_step_num)
+
+            manual_res = StepResult(
+                step_num=next_step_num,
+                action="manual",
+                target=manual_text,
+                status="MANUAL",
+                duration_ms=0.0,
+                screenshot_path=None,
+                error_message=None,
+            )
+            step_results.append(manual_res)
+
+            if allure_reporter:
+                allure_reporter.stop_step(manual_step, manual_res)
+
             next_step_num += 1
 
         finished_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         total_duration = time.perf_counter() - start_time
 
         has_failed = any(s.status.upper() == "FAILED" for s in step_results)
+        has_blocked = any(
+            s.status.upper() in ("BLOCKED", "BROKEN", "ERROR") for s in step_results
+        )
         if has_failed:
             overall_status = "FAILED"
+        elif has_blocked:
+            overall_status = "BLOCKED"
         elif test_case.manual_steps:
             overall_status = "PARTIAL"
         else:
             overall_status = "PASSED"
 
-        return ExecutionReport(
+        report = ExecutionReport(
             case_id=test_case.case_id,
             module=test_case.module,
             title=test_case.title,
@@ -319,6 +416,11 @@ class DocRunner:
             environment=test_case.environment,
             summary_notes=test_case.objective,
         )
+
+        if allure_reporter:
+            allure_reporter.stop_test_case(report)
+
+        return report
 
     def _dispatch_step(
         self,
@@ -338,7 +440,9 @@ class DocRunner:
             and route != "navigate"
         ):
             if test_case.normalization_status is not None and not base_url:
-                raise ValueError("Missing base URL for normalized test case with interactive steps")
+                raise ValueError(
+                    "Missing base URL for normalized test case with interactive steps"
+                )
             if base_url:
                 login_page = LoginPage(page)
                 login_page.navigate(base_url)
@@ -351,7 +455,9 @@ class DocRunner:
                 else base_url
             )
             if test_case.normalization_status is not None and not target_url:
-                raise ValueError("Missing target URL for navigation step in normalized test case")
+                raise ValueError(
+                    "Missing target URL for navigation step in normalized test case"
+                )
             login_page = LoginPage(page)
             if target_url:
                 login_page.navigate(target_url)
@@ -370,17 +476,21 @@ class DocRunner:
                     or ""
                 )
                 if not username or not password:
-                    raise ValueError("Missing login credentials for normalized test case")
+                    raise ValueError(
+                        "Missing login credentials for normalized test case"
+                    )
             else:
                 username = (
                     test_case.credentials.get("username")
                     or test_case.credentials.get("usuario")
-                    or os.getenv("QA_USERNAME", "")
+                    or os.getenv("QA_USERNAME")
+                    or ""
                 )
                 password = (
                     test_case.credentials.get("password")
                     or test_case.credentials.get("clave")
-                    or os.getenv("QA_PASSWORD", "")
+                    or os.getenv("QA_PASSWORD")
+                    or ""
                 )
             login_page = LoginPage(page)
             login_page.login(username, password)
@@ -427,29 +537,55 @@ class DocRunner:
             return "navigate"
         if target.startswith(("http://", "https://")):
             return "navigate"
-        if any(kw in raw for kw in ("navigate to", "navegar a", "ir a", "abrir enlace", "abrir link")):
+        if any(
+            kw in raw
+            for kw in ("navigate to", "navegar a", "ir a", "abrir enlace", "abrir link")
+        ):
             return "navigate"
 
         # Login detection
         if action == "login":
             return "login"
-        if any(kw in raw for kw in ("login", "iniciar sesión", "iniciar sesion", "inicie sesión", "ingresar al sistema")):
+        if any(
+            kw in raw
+            for kw in (
+                "login",
+                "iniciar sesión",
+                "iniciar sesion",
+                "inicie sesión",
+                "ingresar al sistema",
+            )
+        ):
             return "login"
         if any(kw in target for kw in ("login", "iniciar sesión", "iniciar sesion")):
             return "login"
         if ("tabulacion" in (step.value or "").lower() or "tabulacion" in raw) and (
-            "entrar" in (step.value or "").lower() or "ctrl-v" in (step.value or "").lower()
+            "entrar" in (step.value or "").lower()
+            or "ctrl-v" in (step.value or "").lower()
         ):
             return "login"
 
         # User Management detection
-        if "agregar usuario" in clean_target or "agregar usuario" in raw or "add user" in clean_target:
+        if (
+            "agregar usuario" in clean_target
+            or "agregar usuario" in raw
+            or "add user" in clean_target
+        ):
             return "user_mgmt_add_user"
         if ("mantenimiento" in clean_target and "seguridad" in clean_target) or (
-            any(kw in raw for kw in ("gestión de usuarios", "gestion de usuarios", "mantenimiento de usuarios"))
+            any(
+                kw in raw
+                for kw in (
+                    "gestión de usuarios",
+                    "gestion de usuarios",
+                    "mantenimiento de usuarios",
+                )
+            )
         ):
             return "user_mgmt_all"
-        if "mantenimiento" in clean_target or ("mantenimiento" in raw and "click" in action):
+        if "mantenimiento" in clean_target or (
+            "mantenimiento" in raw and "click" in action
+        ):
             return "user_mgmt_mantenimiento"
         if "seguridad" in clean_target or ("seguridad" in raw and "click" in action):
             return "user_mgmt_seguridad"
@@ -494,7 +630,10 @@ class DocRunner:
                         or test_case.credentials.get("usuario")
                         or ""
                     )
-                elif any(k in target_lower for k in ("clave", "password", "contraseña", "contrasena")):
+                elif any(
+                    k in target_lower
+                    for k in ("clave", "password", "contraseña", "contrasena")
+                ):
                     val = (
                         test_case.credentials.get("password")
                         or test_case.credentials.get("clave")
@@ -506,10 +645,19 @@ class DocRunner:
                 and not val
                 and any(
                     k in target_lower
-                    for k in ("usuario", "user", "clave", "password", "contraseña", "contrasena")
+                    for k in (
+                        "usuario",
+                        "user",
+                        "clave",
+                        "password",
+                        "contraseña",
+                        "contrasena",
+                    )
                 )
             ):
-                raise ValueError("Missing credential value for normalized test case step")
+                raise ValueError(
+                    "Missing credential value for normalized test case step"
+                )
 
             locator = self._locate_for_fill(page, clean_target)
             locator.fill(val, timeout=self.default_timeout)
@@ -539,9 +687,9 @@ class DocRunner:
     def _locate_for_click(self, page: Page, clean_target: str, role_tag: str):
         """Locate element for click actions using CSS, role-based, or text matching."""
         # 1. Selector check
-        if any(clean_target.startswith(p) for p in ("#", ".", "//", "xpath=", "css=")) or any(
-            c in clean_target for c in ("[", ">")
-        ):
+        if any(
+            clean_target.startswith(p) for p in ("#", ".", "//", "xpath=", "css=")
+        ) or any(c in clean_target for c in ("[", ">")):
             return page.locator(clean_target).first
 
         # 2. Explicit role from hint
@@ -585,9 +733,9 @@ class DocRunner:
 
     def _locate_for_fill(self, page: Page, clean_target: str):
         """Locate element for text input actions using placeholder, label, role, or attribute matching."""
-        if any(clean_target.startswith(p) for p in ("#", ".", "//", "xpath=", "css=")) or any(
-            c in clean_target for c in ("[", ">")
-        ):
+        if any(
+            clean_target.startswith(p) for p in ("#", ".", "//", "xpath=", "css=")
+        ) or any(c in clean_target for c in ("[", ">")):
             return page.locator(clean_target).first
 
         by_ph = page.get_by_placeholder(clean_target)
@@ -636,6 +784,11 @@ def parse_args(args: list[str] | None = None) -> argparse.Namespace:
         default=None,
         help="Path to output executive PDF report",
     )
+    parser.add_argument(
+        "--allure-dir",
+        default=None,
+        help="Directory to output Allure v2 JSON execution reports",
+    )
     headless_group = parser.add_mutually_exclusive_group()
     headless_group.add_argument(
         "--headless",
@@ -683,11 +836,13 @@ def main(args: list[str] | None = None) -> int:
         screenshots_dir=parsed.screenshots_dir,
         default_timeout=parsed.default_timeout,
         stop_on_failure=parsed.stop_on_failure,
+        allure_dir=parsed.allure_dir,
     )
     report = runner.run_document(
         doc_path=parsed.doc,
         output_report_path=parsed.output_report,
         base_url=parsed.base_url,
+        allure_dir=parsed.allure_dir,
     )
     print(
         f"Execution Report [{report.case_id}]: {report.status} "
@@ -695,6 +850,8 @@ def main(args: list[str] | None = None) -> int:
     )
     if parsed.output_report:
         print(f"Executive PDF Report saved to: {parsed.output_report}")
+    if parsed.allure_dir:
+        print(f"Allure results saved to: {parsed.allure_dir}")
     return 0 if report.status.upper() in ("PASSED", "PARTIAL") else 1
 
 
