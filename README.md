@@ -1,7 +1,7 @@
 # Sistema de Automatización y Normalización Cognitiva de Pruebas con IA
 
-> **Proyecto Personal de Ingeniería de Software e Inteligencia Artificial**  
-> **Candidatura:** Desarrollador de Inteligencia Artificial — **Banesco Banco Universal**  
+> **Proyecto de Pasantías de Ingeniería de Software e Inteligencia Artificial**  
+> **Organización:** Desarrollado para la empresa **ExelixiTech, C.A.**  
 > **Autor:** Fernando José Silva Trejo  
 > **Tecnologías:** Python 3.13 | Playwright | FastAPI | Pydantic v2 | Mypy | Pytest | Allure 2 | ReportLab | Google Antigravity
 
@@ -16,17 +16,17 @@
 
 ## 📌 Resumen Ejecutivo y Propósito
 
-En entornos bancarios de alta criticidad como **Banesco Banco Universal**, los equipos de Control de Calidad (QA) y Pruebas Funcionales reciben continuamente especificaciones de pruebas redactadas en lenguaje natural no estructurado (Word `.docx`, PDF, actas de requerimiento y matrices manuales). Estas especificaciones suelen presentar:
+En entornos empresariales de alta criticidad en **ExelixiTech, C.A.** (atendiendo plataformas como **Sys2000** y microservicios auxiliares), los equipos de Control de Calidad (QA) y Pruebas Funcionales reciben continuamente especificaciones de pruebas redactadas en lenguaje natural no estructurado (Word `.docx`, PDF, actas de requerimiento y matrices manuales). Estas especificaciones suelen presentar:
 - Ambigüedades en los pasos de prueba.
 - Parámetros faltantes (URLs, datos de prueba no documentados o selectores tácitos).
 - Credenciales o datos sensibles expuestos en el texto del documento.
 - Brecha operativa entre el documento funcional y su implementación en código automatizado.
 
-Este proyecto aborda dicha problemática implementando una **arquitectura híbrida de ingeniería de software e inteligencia artificial generativa**, diseñada bajo los más rigurosos estándares de seguridad y observabilidad requeridos por la banca moderna:
+Este proyecto aborda dicha problemática implementando una **arquitectura híbrida de ingeniería de software e inteligencia artificial generativa**, diseñada bajo los más rigurosos estándares de seguridad y observabilidad requeridos en la industria del software y seguros:
 
 1. **Ingestión y Normalización Asistida por IA**: Transforma narrativas de prueba libres en especificaciones canónicas estructuradas y ejecutables, detectando vacíos de información (*gap analysis*) antes de tocar el navegador.
 2. **Grounding Anti-Alucinación**: Algoritmo de verificación que valida que cada acción, URL y valor provenga estrictamente del documento original mediante citas textuales verificadas, rechazando cualquier invención del modelo.
-3. **Privacidad Bancaria y Protección de Datos Personales (PII)**: Enmascaramiento irreversible de credenciales, tokens JWT, correos, Cédulas de Identidad venezolanas y RIFs antes de cualquier interacción con modelos de lenguaje, complementado con modo seguro `--dry-run`.
+3. **Privacidad de Datos y Protección de Información Sensible (PII)**: Enmascaramiento irreversible de credenciales, tokens JWT, correos, Cédulas de Identidad venezolanas y RIFs antes de cualquier interacción con modelos de lenguaje, complementado con modo seguro `--dry-run`.
 4. **Ejecución Documental y Tolerancia a Fallos**: Motor automatizado con Playwright que despacha pasos de prueba, valida precondiciones mediante un *pre-flight gate* (deteniendo la ejecución con código de salida `2` si faltan datos críticos) y captura evidencias visuales paso a paso.
 5. **Reportería Dual de Nivel Corporativo**: Emisión simultánea de reportes ejecutivos en PDF para auditoría y artefactos estructurados en Allure 2 para dashboards de ingeniería.
 6. **Calidad de Código y Tipado Estático Estricto**: 100% tipado y verificado con **Mypy** (cero errores en 28 módulos del núcleo), cobertura exhaustiva de pruebas (227 tests unitarios e integración) y pipeline de Integración Continua (CI) multi-sistema operativo.
@@ -58,7 +58,7 @@ QA_AUTOMATIZACIÓN/
 │   └── allure_reporter.py      # Telemetría de pruebas Allure 2 JSON con sanitización de errores
 ├── pageobjects/                # Implementaciones del Page Object Model (POM)
 │   ├── login_page.py           # Autenticación, selectores privados y esperas explícitas
-│   └── user_management_page.py # Flujos de mantenimiento de usuarios bancarios/aseguradores
+│   └── user_management_page.py # Flujos de mantenimiento de usuarios (Sys2000)
 ├── apiclients/ & mocks/        # Clientes HTTP y simulaciones en memoria (FastAPI)
 ├── tests/                      # Suite Integral de Pruebas (227 pruebas automatizadas)
 │   ├── unit/                   # Pruebas unitarias de esquemas, normalizador, tipado y reportería
@@ -79,14 +79,14 @@ QA_AUTOMATIZACIÓN/
 
 ---
 
-## 🛡️ Seguridad, Privacidad y Gobernanza Bancaria
+## 🛡️ Seguridad, Privacidad y Gobernanza de Datos (PII)
 
-En el sector bancario, el envío inadvertido de información confidencial a proveedores externos de IA representa un riesgo inaceptable. Este sistema implementa defensas a nivel de diseño:
+En entornos corporativos y aseguradores, el envío inadvertido de información confidencial a proveedores externos de IA representa un riesgo inaceptable. Este sistema implementa defensas a nivel de diseño:
 
 ### 1. Enmascaramiento Unidireccional de Secretos y PII
 Antes de serializar cualquier información para un modelo de lenguaje o persistirla en logs de ejecución, el módulo [`normalizer/providers/masking.py`](normalizer/providers/masking.py) aplica expresiones regulares compiladas que reemplazan los datos reales por marcadores estables:
 - **Credenciales y Contraseñas**: Claves en texto plano o entrecomilladas (`password: "secreto 123"`) $\rightarrow$ `password: [REDACTED]`.
-- **Autenticación en URLs**: `https://usuario:clave@servidor.banco/api` $\rightarrow$ `https://usuario:[REDACTED]@servidor.banco/api`.
+- **Autenticación en URLs**: `https://usuario:clave@servidor.empresa/api` $\rightarrow$ `https://usuario:[REDACTED]@servidor.empresa/api`.
 - **Identificación Venezolana**: Cédulas de identidad con o sin formato (`V-12.345.678`, `E87654321`) y RIFs jurídicos/personales (`J-12345678-9`) $\rightarrow$ `[CEDULA_1]`, `[RIF_1]`.
 - **Tokens de Sesión**: JWTs en formato base64 (`eyJ...`) $\rightarrow$ `[JWT_1]`.
 - **Correos Electrónicos**: Direcciones corporativas o de clientes $\rightarrow$ `[EMAIL_1]`.
@@ -233,12 +233,12 @@ El framework incluye 227 pruebas automatizadas que certifican cada componente:
    Los casos de prueba normalizados expanden dinámicamente credenciales desde el entorno en lugar de almacenarlas en archivos:
    - Linux / macOS:
      ```bash
-     export QA_USERNAME="usuario_banca_pruebas"
+     export QA_USERNAME="usuario_qa_pruebas"
      export QA_PASSWORD="clave_segura_pruebas"
      ```
    - Windows (PowerShell):
      ```powershell
-     $env:QA_USERNAME="usuario_banca_pruebas"
+     $env:QA_USERNAME="usuario_qa_pruebas"
      $env:QA_PASSWORD="clave_segura_pruebas"
      ```
 
@@ -271,5 +271,5 @@ El desarrollo del proyecto siguió la metodología **Spec-Driven Development (SD
 
 **Fernando José Silva Trejo**  
 *Ingeniería de Software / Automatización QA / Inteligencia Artificial Aplicada*  
-- **Proyecto:** Demostración de capacidades de arquitectura de software, IA generativa con control determinista y seguridad bancaria para la posición de **Desarrollador de Inteligencia Artificial** en **Banesco Banco Universal**.  
+- **Proyecto:** Proyecto de pasantías desarrollado para la empresa **ExelixiTech, C.A.**, enfocado en automatización avanzada de pruebas, normalización cognitiva de especificaciones asistida por IA y observabilidad integral.  
 - **Repositorio:** [github.com/Jvske-max/exelixi-qa-automation](https://github.com/Jvske-max/exelixi-qa-automation)
